@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a73e8">
+  <title>Gestione CdC - ITIS G. Riva</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" sizes="192x192" href="https://img.icons8.com/fluency/192/000000/clipboard.png">
+  <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/192/000000/clipboard.png">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <style>
+    body {
+      padding-top: env(safe-area-inset-top);
+      margin: 0;
+      background:#f0f2f5;
+      min-height:100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .navbar-brand b { color:#0d6efd; }
+    .card { border-radius:1rem; border:none; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .login-wrap { min-height:90vh; display:flex; align-items:center; }
+    .badge-counter { font-size:1rem; padding:.5rem .8rem; }
+    .counter-red { color:#dc3545 !important; font-weight:700; }
+    .counter-green { color:#198754 !important; font-weight:700; }
+    .stato-PARTECIPA { color:#198754; font-weight:600; }
+    .stato-ESONERATO { color:#fd7e14; font-weight:600; }
+    .stato-ASSENTE { color:#dc3545; font-weight:600; }
+    .cdc-passato { opacity:.55; background:#f8f9fa; }
+    .cdc-coordinata { border-left:4px solid #0d6efd; }
+    .small-muted { font-size:.85rem; color:#6c757d; }
+    table.tbl-segr td, table.tbl-segr th { white-space:nowrap; }
+    .row-sotto { background:#fff5f5; }
+    .hide { display:none !important; }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+    .cal-cell { min-height:80px; border:1px solid #dee2e6; border-radius:6px; padding:4px; background:#fff; cursor:default; }
+    .cal-cell.today { border:2px solid #0d6efd; background:#f0f7ff; }
+    .cal-cell.other-month { background:#f8f9fa; color:#adb5bd; }
+    .cal-cell-header { text-align:center; font-weight:600; font-size:.85rem; background:#e9ecef; padding:6px 2px; border-radius:4px; }
+    .cal-day-num { font-weight:700; font-size:.9rem; margin-bottom:2px; }
+    .cal-attivita-badge { display:block; font-size:.7rem; padding:2px 4px; margin:1px 0; border-radius:3px; cursor:pointer;
+      background:#e7f1ff; color:#0d4a8c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .cal-attivita-badge:hover { background:#cce0ff; }
+    .cal-nav { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:16px; }
+    .cal-nav button { min-width:40px; }
+    .cal-nav h5 { margin:0; min-width:160px; text-align:center; }
+    .detail-month-block { margin-bottom:16px; }
+    .detail-month-block h6 { border-bottom:1px solid #dee2e6; padding-bottom:4px; }
+    .elenco-attivita-item { cursor:pointer; padding:8px 12px; border-radius:6px; margin:2px 0; transition:background .15s; }
+    .elenco-attivita-item:hover { background:#e9ecef; }
+    .elenco-attivita-item .badge { float:right; }
+    .tbl-orario { font-size:.85rem; }
+    .tbl-orario th { background:#0d6efd; color:#fff; text-align:center; vertical-align:middle; }
+    .tbl-orario td { vertical-align:middle; text-align:center; min-width:100px; }
+    .tbl-orario td.ora-label { background:#e9ecef; font-weight:700; }
+    .tbl-orario td.bg-ora { background:#dbeafe; }
+  </style>
+</head>
+<body>
+
+<!-- ============================ NAVBAR ============================ -->
+<nav id="navbar" class="navbar navbar-light bg-white border-bottom hide">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">📋 Gestione CdC <b>ITIS Riva</b></span>
+    <div>
+      <span id="user-info" class="me-3 small-muted"></span>
+      <button class="btn btn-outline-secondary btn-sm me-2" onclick="apriCambioPwd()">🔑 Password</button>
+      <button class="btn btn-outline-danger btn-sm" onclick="logout()">Esci</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================ LOGIN ============================ -->
+<div id="view-login" class="container login-wrap">
+  <div class="card p-4 mx-auto" style="max-width:420px; width:100%;">
+    <h3 class="text-center mb-1">📋 Gestione CdC</h3>
+    <p class="text-center small-muted mb-4">ITIS G. Riva - Saronno</p>
+
+    <div id="login-form">
+      <div class="mb-3">
+        <label class="form-label">Email istituzionale</label>
+        <input type="email" id="login-email" class="form-control" placeholder="nome.cognome@itisriva.edu.it" autocomplete="username">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" id="login-pwd" class="form-control" placeholder="Password" autocomplete="current-password">
+      </div>
+      <div id="login-err" class="alert alert-danger py-2 hide"></div>
+      <button id="btn-login" class="btn btn-primary w-100" onclick="doLogin()">Accedi</button>
+      <div class="text-center mt-3">
+        <a href="#" onclick="apriResetStep1();return false;">Password dimenticata?</a>
+      </div>
+      <p class="text-center small-muted mt-3 mb-0">Primo accesso? Usa la password predefinita comunicata dalla scuola.</p>
+    </div>
+
+    <div id="reset-step1" class="hide">
+      <h5>Recupero password</h5>
+      <p class="small-muted">Riceverai un codice via email valido 15 minuti.</p>
+      <input type="email" id="reset-email" class="form-control mb-3" placeholder="Email istituzionale">
+      <div id="reset1-err" class="alert alert-danger py-2 hide"></div>
+      <div id="reset1-ok" class="alert alert-success py-2 hide"></div>
+      <button class="btn btn-primary w-100 mb-2" onclick="inviaOTP()">Invia codice</button>
+      <button class="btn btn-link w-100" onclick="tornaLogin()">Torna al login</button>
+    </div>
+
+    <div id="reset-step2" class="hide">
+      <h5>Inserisci codice</h5>
+      <p class="small-muted">Codice inviato a: <b id="reset-email-show"></b></p>
+      <input type="text" id="reset-otp" class="form-control mb-2" placeholder="Codice a 6 cifre" inputmode="numeric" maxlength="6">
+      <input type="password" id="reset-newpwd" class="form-control mb-2" placeholder="Nuova password (min 6 caratteri)">
+      <input type="password" id="reset-newpwd2" class="form-control mb-3" placeholder="Conferma nuova password">
+      <div id="reset2-err" class="alert alert-danger py-2 hide"></div>
+      <button class="btn btn-success w-100 mb-2" onclick="confermaOTP()">Imposta nuova password</button>
+      <button class="btn btn-link w-100" onclick="tornaLogin()">Annulla</button>
+    </div>
+
+    <div id="loader-login" class="text-center mt-3 hide">
+      <div class="spinner-border spinner-border-sm text-primary"></div> Attendere...
+    </div>
+  </div>
+</div>
+
+<!-- ============================ DASHBOARD ============================ -->
+<div id="view-dashboard" class="container my-4 hide">
+
+  <ul class="nav nav-tabs mb-3" id="tabs">
+    <li class="nav-item"><a class="nav-link active" id="tab-cdc" href="#" onclick="switchTab('cdc');return false;">I miei CdC</a></li>
+    <li class="nav-item hide" id="tab-coord-li"><a class="nav-link" id="tab-coord" href="#" onclick="switchTab('coord');return false;">CdC coordinati</a></li>
+    <li class="nav-item hide" id="tab-cal-li"><a class="nav-link" id="tab-cal" href="#" onclick="switchTab('calendario');return false;">📅 Attività</a></li>
+    <li class="nav-item hide" id="tab-orario-li"><a class="nav-link" id="tab-orario" href="#" onclick="switchTab('orario');return false;">🕐 Orario</a></li>
+    <li class="nav-item hide" id="tab-segr-li"><a class="nav-link" id="tab-segr" href="#" onclick="switchTab('segr');return false;">Vista segreteria</a></li>
+  </ul>
+
+  <div id="pane-cdc">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+      <h4 class="mb-0">I tuoi Consigli di Classe</h4>
+      <div class="d-flex flex-wrap gap-2">
+        <span class="badge bg-info text-dark badge-counter">Pianificate: <span id="cnt-tot">—</span> h</span>
+        <span class="badge bg-secondary badge-counter">Soglia min: <span id="cnt-soglia">—</span> h</span>
+        <span class="badge bg-light text-dark badge-counter">Tue ore: <span id="cnt-attuali" class="counter-green">—</span> h</span>
+      </div>
+    </div>
+    <div id="cdc-list" class="list-group"></div>
+    <div id="cdc-empty" class="alert alert-light text-center hide mt-3">Nessun CdC trovato per le tue classi.</div>
+  </div>
+
+  <div id="pane-coord" class="hide">
+    <h4>CdC delle classi che coordini</h4>
+    <p class="small-muted">Clicca su un CdC per vedere i docenti e gestire le presenze.</p>
+    <div id="coord-list" class="list-group"></div>
+    <div id="coord-detail" class="card p-3 mt-3 hide">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 id="coord-detail-title" class="mb-0"></h5>
+        <button class="btn btn-sm btn-outline-secondary" onclick="chiudiCoordDetail()">Chiudi</button>
+      </div>
+      <div id="coord-docenti"></div>
+    </div>
+  </div>
+
+  <div id="pane-segr" class="hide">
+    <h4>Riepilogo ore CdC - tutti i docenti</h4>
+    <div id="segr-ricap" class="mb-3 d-flex flex-wrap gap-2"></div>
+    <input type="text" class="form-control mb-3" id="segr-filter" placeholder="Filtra per nome..." oninput="filtraSegr()">
+    <div class="table-responsive">
+      <table class="table table-sm tbl-segr">
+        <thead class="table-light">
+          <tr><th>Docente</th><th class="text-end">Ore sett.</th><th class="text-end">Soglia min</th><th class="text-end">Pianificate</th><th class="text-end">Partecipa</th><th>Stato</th></tr>
+        </thead>
+        <tbody id="segr-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="pane-calendario" class="hide">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="mb-0">📅 Calendario Attività</h4>
+      <button class="btn btn-sm btn-outline-primary" onclick="toggleVistaElenco()" id="btn-toggle-vista">📋 Elenco attività</button>
+    </div>
+    <div id="vista-calendario">
+      <div class="cal-nav">
+        <button class="btn btn-outline-secondary btn-sm" onclick="cambiaMese(-1)">◀</button>
+        <h5 id="cal-titolo-mese">—</h5>
+        <button class="btn btn-outline-secondary btn-sm" onclick="cambiaMese(1)">▶</button>
+        <button class="btn btn-outline-primary btn-sm ms-3" onclick="vaiAOggi()">Oggi</button>
+      </div>
+      <div class="cal-grid mb-2" id="cal-header-giorni"></div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div id="vista-elenco" class="hide">
+      <h5>Elenco attività</h5>
+      <p class="small-muted">Clicca su un'attività per vedere tutte le date in cui si svolge.</p>
+      <div id="elenco-attivita-list"></div>
+    </div>
+  </div>
+
+  <div id="pane-orario" class="hide">
+    <h4>🕐 Il mio Orario</h4>
+    <p class="small-muted" id="orario-nome-docente"></p>
+    <div id="orario-container" class="table-responsive"></div>
+  </div>
+
+  <div id="loader-dash" class="text-center mt-4 hide">
+    <div class="spinner-border text-primary"></div>
+  </div>
+</div>
+
+<!-- MODALE CAMBIO PASSWORD -->
+<div class="modal fade" id="modalPwd" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Cambia password</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="password" id="pwd-old" class="form-control mb-2" placeholder="Password attuale">
+        <input type="password" id="pwd-new" class="form-control mb-2" placeholder="Nuova password (min 6 caratteri)">
+        <input type="password" id="pwd-new2" class="form-control mb-2" placeholder="Conferma nuova password">
+        <div id="pwd-err" class="alert alert-danger py-2 hide"></div>
+        <div id="pwd-ok" class="alert alert-success py-2 hide"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+        <button class="btn btn-primary" onclick="cambiaPwd()">Salva</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALE CONFERMA SOTTO SOGLIA -->
+<div class="modal fade" id="modalSottoSoglia" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning"><h5 class="modal-title">⚠️ Attenzione</h5></div>
+      <div class="modal-body">
+        <p>ATTENZIONE, esonerandoti al c.d.c. selezionato, svolgerai un minimo di ore non congruo.</p>
+        <p class="mb-0">Ore previste: <b id="ss-ore">—</b> &nbsp; Soglia minima: <b id="ss-soglia">—</b></p>
+        <p class="mt-3 mb-0"><b>Vuoi continuare?</b></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="annullaForzaEsonero()">Annulla</button>
+        <button class="btn btn-warning" onclick="confermaForzaEsonero()">Continua</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALE DETTAGLIO ATTIVITÀ -->
+<div class="modal fade" id="modalAttivita" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-attivita-titolo"></h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modal-attivita-body"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ========================================================================
+// ⚠️⚠️⚠️  INCOLLA QUI SOTTO IL TUO URL /exec  ⚠️⚠️⚠️
+// Deve essere nel formato: https://script.google.com/macros/s/.../exec
+// (SENZA /u/1/  ! )
+// ========================================================================
+const API_URL = "https://script.google.com/macros/s/AKfycbwXn4eVQJUiKQ3eFz1RWyGe2wqT_Qo9hU-G0DqJOybw/exec";
+// ========================================================================
+
+// ============================ STATE ============================
+let stateUser = null;
+let stateDashboard = null;
+let pendingForceEsonero = null;
+let sessionToken = localStorage.getItem('cdc_token') || null;
+
+const GIORNI_BREVI = ["LUN","MAR","MER","GIO","VEN","SAB","DOM"];
+
+// ============================ API LAYER ============================
+/**
+ * Chiama l'API Apps Script. Sostituisce google.script.run.
+ * Ritorna una Promise che risolve con l'oggetto JSON di risposta.
+ */
+async function apiCall(action, payload) {
+  let res;
+  try {
+    res = await fetch(API_URL, {
+      method: 'POST',
+      // NIENTE header Content-Type: così resta text/plain e niente preflight CORS
+      body: JSON.stringify({
+        action: action,
+        payload: payload || {},
+        token: sessionToken
+      })
+    });
+  } catch (netErr) {
+    throw new Error('Impossibile contattare il server. Controlla la connessione.');
+  }
+  let data;
+  try {
+    data = await res.json();
+  } catch (parseErr) {
+    throw new Error('Risposta server non valida.');
+  }
+  // Sessione scaduta: pulisco e rimando al login
+  if (data && data.code === 'AUTH') {
+    sessionToken = null;
+    localStorage.removeItem('cdc_token');
+    logout();
+    throw new Error(data.error || 'Sessione scaduta.');
+  }
+  return data;
+}
+
+// ============================ HELPERS UI ============================
+function show(id) { document.getElementById(id).classList.remove('hide'); }
+function hide(id) { document.getElementById(id).classList.add('hide'); }
+function showError(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.remove('hide'); }
+function clearErr(id) { hide(id); document.getElementById(id).textContent = ''; }
+function showOk(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.remove('hide'); }
+function loaderLogin(on) { on ? show('loader-login') : hide('loader-login'); }
+function loaderDash(on)  { on ? show('loader-dash')  : hide('loader-dash');  }
+
+function _formatDateISO(d) {
+  const yy = d.getFullYear();
+  const mm = ("0" + (d.getMonth() + 1)).slice(-2);
+  const dd = ("0" + d.getDate()).slice(-2);
+  return yy + "-" + mm + "-" + dd;
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+// ============================ LOGIN ============================
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pwd   = document.getElementById('login-pwd').value;
+  clearErr('login-err');
+  if (!email || !pwd) return showError('login-err', 'Inserisci email e password.');
+  loaderLogin(true);
+  document.getElementById('btn-login').disabled = true;
+
+  apiCall('login', { email: email, password: pwd })
+    .then(function(res) {
+      loaderLogin(false);
+      document.getElementById('btn-login').disabled = false;
+      if (!res.success) return showError('login-err', res.message || 'Errore login.');
+      // Salvo il token e l'utente
+      sessionToken = res.sessionToken;
+      localStorage.setItem('cdc_token', sessionToken);
+      stateUser = res.user;
+      localStorage.setItem('cdc_user', JSON.stringify(res.user));
+      if (res.isFirstAccess) alert('Primo accesso effettuato. Ti consigliamo di cambiare la password dal pulsante 🔑 in alto a destra.');
+      mostraDashboard();
+    })
+    .catch(function(err) {
+      loaderLogin(false);
+      document.getElementById('btn-login').disabled = false;
+      showError('login-err', err.message);
+    });
+}
+
+function logout() {
+  // Tento di revocare il token lato server (best effort, non blocco)
+  if (sessionToken) {
+    apiCall('logout', {}).catch(function(){});
+  }
+  sessionToken = null;
+  stateUser = null;
+  stateDashboard = null;
+  localStorage.removeItem('cdc_token');
+  localStorage.removeItem('cdc_user');
+  document.getElementById('login-pwd').value = '';
+  hide('view-dashboard'); hide('navbar');
+  show('view-login');
+  hide('reset-step1'); hide('reset-step2');
+  document.getElementById('login-form').classList.remove('hide');
+}
+
+// ============================ RESET PASSWORD ============================
+function apriResetStep1() {
+  hide('login-form'); show('reset-step1');
+  clearErr('reset1-err'); hide('reset1-ok');
+  document.getElementById('reset-email').value = document.getElementById('login-email').value.trim();
+}
+function tornaLogin() {
+  hide('reset-step1'); hide('reset-step2');
+  document.getElementById('login-form').classList.remove('hide');
+}
+function inviaOTP() {
+  const email = document.getElementById('reset-email').value.trim();
+  clearErr('reset1-err'); hide('reset1-ok');
+  if (!email) return showError('reset1-err', 'Inserisci email.');
+  loaderLogin(true);
+  apiCall('richiediResetOTP', { email: email })
+    .then(function(res) {
+      loaderLogin(false);
+      document.getElementById('reset-email-show').textContent = email;
+      hide('reset-step1'); show('reset-step2');
+      clearErr('reset2-err');
+    })
+    .catch(function(err) { loaderLogin(false); showError('reset1-err', err.message); });
+}
+function confermaOTP() {
+  const email = document.getElementById('reset-email').value.trim();
+  const otp   = document.getElementById('reset-otp').value.trim();
+  const n1    = document.getElementById('reset-newpwd').value;
+  const n2    = document.getElementById('reset-newpwd2').value;
+  clearErr('reset2-err');
+  if (!otp || otp.length !== 6) return showError('reset2-err', 'Inserisci il codice a 6 cifre.');
+  if (n1.length < 6) return showError('reset2-err', 'La password deve essere di almeno 6 caratteri.');
+  if (n1 !== n2) return showError('reset2-err', 'Le due password non coincidono.');
+  loaderLogin(true);
+  apiCall('confermaResetOTP', { email: email, codice: otp, newPwd: n1 })
+    .then(function(res) {
+      loaderLogin(false);
+      if (!res.success) return showError('reset2-err', res.message);
+      alert('Password aggiornata. Effettua il login.');
+      tornaLogin();
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-pwd').value = '';
+    })
+    .catch(function(err) { loaderLogin(false); showError('reset2-err', err.message); });
+}
+
+// ============================ CAMBIO PASSWORD ============================
+function apriCambioPwd() {
+  document.getElementById('pwd-old').value = '';
+  document.getElementById('pwd-new').value = '';
+  document.getElementById('pwd-new2').value = '';
+  hide('pwd-err'); hide('pwd-ok');
+  new bootstrap.Modal(document.getElementById('modalPwd')).show();
+}
+function cambiaPwd() {
+  const o = document.getElementById('pwd-old').value;
+  const n1 = document.getElementById('pwd-new').value;
+  const n2 = document.getElementById('pwd-new2').value;
+  hide('pwd-err'); hide('pwd-ok');
+  if (n1.length < 6) return showError('pwd-err', 'Min 6 caratteri.');
+  if (n1 !== n2) return showError('pwd-err', 'Le password non coincidono.');
+  apiCall('changePassword', { oldPwd: o, newPwd: n1 })
+    .then(function(res) {
+      if (!res.success) return showError('pwd-err', res.message);
+      showOk('pwd-ok', 'Password aggiornata.');
+      setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalPwd')).hide(); }, 1200);
+    })
+    .catch(function(err) { showError('pwd-err', err.message); });
+}
+
+// ============================ DASHBOARD ============================
+function mostraDashboard() {
+  hide('view-login');
+  show('view-dashboard');
+  show('navbar');
+  document.getElementById('user-info').textContent = stateUser.displayName + ' (' + stateUser.email + ')';
+  caricaDashboard();
+}
+
+function caricaDashboard() {
+  loaderDash(true);
+  apiCall('getDashboard', {})
+    .then(function(res) {
+      loaderDash(false);
+      if (res.error) return alert('Errore: ' + res.error);
+      stateDashboard = res;
+
+      if (res.isSegreteria) {
+        document.getElementById('tab-segr-li').classList.remove('hide');
+        document.getElementById('tab-coord-li').classList.add('hide');
+        document.getElementById('tab-cal-li').classList.remove('hide');
+        document.getElementById('tab-orario-li').classList.remove('hide');
+        switchTab('segr');
+        renderSegreteria(res.segreteria);
+        return;
+      }
+
+      renderCdcList(res);
+      if (res.isCoordinatore) { show('tab-coord-li'); renderCoordList(res); }
+      else { hide('tab-coord-li'); }
+      hide('tab-segr-li');
+      show('tab-cal-li');
+      show('tab-orario-li');
+      switchTab('cdc');
+    })
+    .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
+}
+
+// ============================ SWITCH TAB ============================
+function switchTab(t) {
+  ['cdc','coord','segr','calendario','orario'].forEach(function(x) {
+    document.getElementById('pane-' + x).classList.add('hide');
+    const tab = document.getElementById('tab-' + x);
+    if (tab) tab.classList.remove('active');
+  });
+  document.getElementById('pane-' + t).classList.remove('hide');
+  const tab = document.getElementById('tab-' + t);
+  if (tab) tab.classList.add('active');
+
+  if (t === 'calendario' && !calState.datiMese) {
+    caricaCalendarioAttivita();
+  }
+  if (t === 'orario') {
+    caricaOrario();
+  }
+}
+
+// ============================ RENDER LISTA CDC DOCENTE ============================
+function renderCdcList(d) {
+  document.getElementById('cnt-tot').textContent = d.oreTotali;
+  document.getElementById('cnt-soglia').textContent = d.soglia;
+  aggiornaContatoreOre(d.orePartecipazione, d.soglia);
+
+  const list = document.getElementById('cdc-list');
+  list.innerHTML = '';
+  if (!d.cdc || d.cdc.length === 0) { show('cdc-empty'); return; }
+  hide('cdc-empty');
+
+  d.cdc.forEach(function(c) {
+    const passato = c.passato;
+    const stato = c.stato;
+    const cls = ['list-group-item','d-flex','justify-content-between','align-items-center','flex-wrap','gap-2'];
+    if (passato) cls.push('cdc-passato');
+    if (c.coordinata) cls.push('cdc-coordinata');
+
+    const left = document.createElement('div');
+    left.innerHTML =
+      '<strong>Classe ' + escapeHtml(c.classe) + '</strong>' +
+      (c.coordinata ? ' <span class="badge bg-primary">Coordini</span>' : '') +
+      '<br><small class="small-muted">' + escapeHtml(c.dataIT) + ' · ' + escapeHtml(c.oraInizio) + '-' + escapeHtml(c.oraFine) +
+      ' (' + c.durataOre + 'h)' + (c.aula ? ' · Aula ' + escapeHtml(c.aula) : '') + '</small>' +
+      '<div class="mt-1 stato-' + stato + '">Stato: ' + statoLabel(stato) + '</div>';
+
+    const right = document.createElement('div');
+    if (passato) {
+      right.innerHTML = '<span class="badge bg-secondary">Concluso</span>';
+    } else {
+      const btnPart = document.createElement('button');
+      btnPart.className = 'btn btn-sm me-1 ' + (stato === 'PARTECIPA' ? 'btn-success' : 'btn-outline-success');
+      btnPart.textContent = 'Partecipo';
+      btnPart.onclick = function() { cambiaStato(c.id, 'PARTECIPA'); };
+
+      const btnEson = document.createElement('button');
+      btnEson.className = 'btn btn-sm ' + (stato === 'ESONERATO' ? 'btn-warning' : 'btn-outline-warning');
+      btnEson.textContent = 'Esonero';
+      btnEson.onclick = function() { cambiaStato(c.id, 'ESONERATO'); };
+
+      right.appendChild(btnPart); right.appendChild(btnEson);
+    }
+
+    const div = document.createElement('div');
+    div.className = cls.join(' ');
+    div.appendChild(left); div.appendChild(right);
+    list.appendChild(div);
+  });
+}
+
+function statoLabel(s) {
+  if (s === 'PARTECIPA') return 'Partecipo';
+  if (s === 'ESONERATO') return 'Esonerato';
+  if (s === 'ASSENTE')   return 'Assente (segnato dal coordinatore)';
+  return s;
+}
+
+function aggiornaContatoreOre(ore, soglia) {
+  const el = document.getElementById('cnt-attuali');
+  el.textContent = ore;
+  el.classList.remove('counter-red','counter-green');
+  el.classList.add(ore < soglia ? 'counter-red' : 'counter-green');
+}
+
+function cambiaStato(idCdc, nuovoStato) {
+  loaderDash(true);
+  apiCall('toggleEsonero', { idCdc: idCdc, nuovoStato: nuovoStato, forzaSottosoglia: false })
+    .then(function(res) {
+      loaderDash(false);
+      if (res.success) { caricaDashboard(); return; }
+      if (res.requireConfirm) {
+        pendingForceEsonero = { idCdc: idCdc };
+        document.getElementById('ss-ore').textContent = res.oreFuture;
+        document.getElementById('ss-soglia').textContent = res.soglia;
+        new bootstrap.Modal(document.getElementById('modalSottoSoglia')).show();
+        return;
+      }
+      alert(res.message || 'Errore.');
+    })
+    .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
+}
+
+function annullaForzaEsonero() { pendingForceEsonero = null; }
+
+function confermaForzaEsonero() {
+  if (!pendingForceEsonero) return;
+  const idCdc = pendingForceEsonero.idCdc;
+  pendingForceEsonero = null;
+  bootstrap.Modal.getInstance(document.getElementById('modalSottoSoglia')).hide();
+  loaderDash(true);
+  apiCall('toggleEsonero', { idCdc: idCdc, nuovoStato: 'ESONERATO', forzaSottosoglia: true })
+    .then(function(res) { loaderDash(false); if (!res.success) return alert(res.message || 'Errore.'); caricaDashboard(); })
+    .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
+}
+
+// ============================ RENDER VISTA COORDINATORE ============================
+function renderCoordList(d) {
+  const list = document.getElementById('coord-list');
+  list.innerHTML = '';
+  const coordCdc = (d.cdc || []).filter(function(c) { return c.coordinata; });
+  if (coordCdc.length === 0) { list.innerHTML = '<div class="alert alert-light text-center">Nessun CdC trovato per le classi coordinate.</div>'; return; }
+  coordCdc.forEach(function(c) {
+    const item = document.createElement('a');
+    item.href = '#';
+    item.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center' + (c.passato ? ' cdc-passato' : '');
+    item.onclick = function(ev) { ev.preventDefault(); apriCoordDetail(c.id); };
+    item.innerHTML = '<div><strong>Classe ' + escapeHtml(c.classe) + '</strong><br><small class="small-muted">' + escapeHtml(c.dataIT) + ' · ' + escapeHtml(c.oraInizio) + '-' + escapeHtml(c.oraFine) + (c.aula ? ' · Aula ' + escapeHtml(c.aula) : '') + '</small></div><span class="badge bg-primary">Vedi docenti »</span>';
+    list.appendChild(item);
+  });
+}
+
+let currentCoordCdcId = null;
+
+function apriCoordDetail(idCdc) {
+  currentCoordCdcId = idCdc;
+  loaderDash(true);
+  apiCall('getCdcDettaglio', { idCdc: idCdc })
+    .then(function(res) { loaderDash(false); if (res.error) return alert(res.error); renderCoordDetail(res); })
+    .catch(function(err) { loaderDash(false); alert('Errore: ' + err.message); });
+}
+
+function chiudiCoordDetail() { hide('coord-detail'); currentCoordCdcId = null; }
+
+function renderCoordDetail(res) {
+  const c = res.cdc;
+  document.getElementById('coord-detail-title').innerHTML = 'Classe ' + escapeHtml(c.classe) + ' — ' + escapeHtml(c.dataIT) + ' (' + escapeHtml(c.oraInizio) + '-' + escapeHtml(c.oraFine) + ')';
+  const cont = document.getElementById('coord-docenti');
+  cont.innerHTML = '';
+  if (!res.docenti || res.docenti.length === 0) { cont.innerHTML = '<div class="alert alert-light">Nessun docente trovato per questa classe.</div>'; show('coord-detail'); return; }
+
+  const tbl = document.createElement('table');
+  tbl.className = 'table table-sm align-middle';
+  tbl.innerHTML = '<thead class="table-light"><tr><th>Docente</th><th>Stato</th><th class="text-end">Azioni</th></tr></thead>';
+  const tbody = document.createElement('tbody');
+
+  res.docenti.forEach(function(d) {
+    const tr = document.createElement('tr');
+    const tdNome = document.createElement('td'); tdNome.textContent = d.displayName;
+    const tdStato = document.createElement('td'); tdStato.innerHTML = '<span class="stato-' + d.stato + '">' + statoLabel(d.stato) + '</span>';
+    const tdAzioni = document.createElement('td'); tdAzioni.className = 'text-end';
+    if (!d.email || c.passato) { tdAzioni.innerHTML = '<span class="small-muted">—</span>'; }
+    else {
+      const btnAss = document.createElement('button');
+      btnAss.className = 'btn btn-sm ' + (d.stato === 'ASSENTE' ? 'btn-danger' : 'btn-outline-danger');
+      btnAss.textContent = (d.stato === 'ASSENTE' ? 'Togli assenza' : 'Segna assente');
+      btnAss.onclick = function() { coordCambiaStato(d.email, (d.stato === 'ASSENTE') ? 'PARTECIPA' : 'ASSENTE'); };
+      tdAzioni.appendChild(btnAss);
+    }
+    tr.appendChild(tdNome); tr.appendChild(tdStato); tr.appendChild(tdAzioni);
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody); cont.appendChild(tbl);
+  show('coord-detail');
+}
+
+function coordCambiaStato(emailDocente, nuovoStato) {
+  if (!currentCoordCdcId) return;
+  loaderDash(true);
+  apiCall('coordSetStato', { idCdc: currentCoordCdcId, emailDocente: emailDocente, nuovoStato: nuovoStato })
+    .then(function(res) { loaderDash(false); if (!res.success) return alert(res.message || 'Errore.'); apriCoordDetail(currentCoordCdcId); })
+    .catch(function(err) { loaderDash(false); alert('Errore: ' + err.message); });
+}
+
+// ============================ RENDER VISTA SEGRETERIA ============================
+let segrData = null;
+
+function renderSegreteria(s) { segrData = s.docenti || []; filtraSegr(); }
+
+function filtraSegr() {
+  const f = (document.getElementById('segr-filter').value || '').toLowerCase().trim();
+  const tbody = document.getElementById('segr-tbody');
+  tbody.innerHTML = '';
+  if (!segrData) return;
+
+  const rows = segrData.filter(function(d) { return !f || (d.displayName||'').toLowerCase().indexOf(f)>=0 || (d.email||'').toLowerCase().indexOf(f)>=0; });
+  if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-center small-muted py-3">Nessun docente trovato.</td></tr>'; return; }
+
+  rows.forEach(function(d) {
+    const tr = document.createElement('tr');
+    if (d.sotto) tr.className = 'row-sotto';
+    const ab = d.haAccount ? '' : ' <span class="badge bg-secondary" title="Non ha ancora effettuato il primo accesso">no login</span>';
+    tr.innerHTML = '<td>' + escapeHtml(d.displayName) + ab + '<br><small class="small-muted">' + escapeHtml(d.email) + '</small></td>' +
+      '<td class="text-end">' + d.oreSett + '</td><td class="text-end">' + d.soglia + '</td><td class="text-end">' + d.oreTot + '</td>' +
+      '<td class="text-end ' + (d.sotto?'counter-red':'counter-green') + '">' + d.orePart + '</td>' +
+      '<td>' + (d.sotto ? '<span class="badge bg-danger">Sotto soglia</span>' : '<span class="badge bg-success">OK</span>') + '</td>';
+    tbody.appendChild(tr);
+  });
+
+  const ricap = document.getElementById('segr-ricap');
+  if (ricap) {
+    const tot = segrData.length, sotto = segrData.filter(function(d){return d.sotto;}).length, noLogin = segrData.filter(function(d){return !d.haAccount;}).length;
+    ricap.innerHTML = '<span class="badge bg-light text-dark">Totale docenti: ' + tot + '</span> <span class="badge bg-danger">Sotto soglia: ' + sotto + '</span> <span class="badge bg-secondary">Senza login: ' + noLogin + '</span> ' + (f ? '<span class="badge bg-info text-dark">Visualizzati: ' + rows.length + '</span>' : '');
+  }
+}
+
+// ============================ CALENDARIO ATTIVITÀ ============================
+let calState = {
+  meseCorrente: new Date().getMonth() + 1,
+  annoCorrente: new Date().getFullYear(),
+  datiMese: null,
+  mesiDisponibili: [],
+  vistaElenco: false
+};
+
+const oggiInit = new Date();
+if (oggiInit.getFullYear() < 2025 || (oggiInit.getFullYear() === 2025 && oggiInit.getMonth() < 8)) {
+  calState.meseCorrente = 9;
+  calState.annoCorrente = 2025;
+}
+
+function caricaCalendarioAttivita() {
+  loaderDash(true);
+  apiCall('getCalendarioAttivita', { mese: calState.meseCorrente, anno: calState.annoCorrente })
+    .then(function(res) {
+      loaderDash(false);
+      calState.datiMese = res;
+      calState.mesiDisponibili = res.mesiDisponibili || [];
+      renderCalendario();
+    })
+    .catch(function(err) { loaderDash(false); alert('Errore caricamento calendario: ' + err.message); });
+}
+
+function cambiaMese(delta) {
+  let m = calState.meseCorrente + delta;
+  let a = calState.annoCorrente;
+  if (m < 1) { m = 12; a--; }
+  if (m > 12) { m = 1; a++; }
+  calState.meseCorrente = m;
+  calState.annoCorrente = a;
+  caricaCalendarioAttivita();
+}
+
+function vaiAOggi() {
+  const oggi = new Date();
+  calState.meseCorrente = oggi.getMonth() + 1;
+  calState.annoCorrente = oggi.getFullYear();
+  if (oggi < new Date(2025,8,1)) { calState.meseCorrente = 9; calState.annoCorrente = 2025; }
+  caricaCalendarioAttivita();
+}
+
+function renderCalendario() {
+  const d = calState.datiMese;
+  if (!d) return;
+
+  const MESI = ["","Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+  document.getElementById('cal-titolo-mese').textContent = MESI[d.mese] + " " + d.anno;
+
+  const headerGiorni = document.getElementById('cal-header-giorni');
+  headerGiorni.innerHTML = '';
+  GIORNI_BREVI.forEach(function(g) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell-header';
+    cell.textContent = g;
+    headerGiorni.appendChild(cell);
+  });
+
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  const primoGiorno = new Date(d.anno, d.mese - 1, 1);
+  const ultimoGiorno = new Date(d.anno, d.mese, 0);
+  const giorniNelMese = ultimoGiorno.getDate();
+
+  let primoGiornoIso = primoGiorno.getDay();
+  primoGiornoIso = primoGiornoIso === 0 ? 7 : primoGiornoIso;
+
+  for (let i = 1; i < primoGiornoIso; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell other-month';
+    cell.innerHTML = '<div class="cal-day-num" style="color:#adb5bd;">·</div>';
+    grid.appendChild(cell);
+  }
+
+  const oggi = new Date();
+  const oggiISO = _formatDateISO(oggi);
+
+  for (let g = 1; g <= giorniNelMese; g++) {
+    const dataObj = new Date(d.anno, d.mese - 1, g);
+    const dataISO = _formatDateISO(dataObj);
+    const attivitaGiorno = (d.attivitaPerGiorno && d.attivitaPerGiorno[dataISO]) || [];
+
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell';
+    if (dataISO === oggiISO) cell.classList.add('today');
+
+    let html = '<div class="cal-day-num">' + g + '</div>';
+    attivitaGiorno.forEach(function(att) {
+      html += '<span class="cal-attivita-badge" onclick="event.stopPropagation();apriDettaglioAttivita(\'' +
+        escapeHtml(att).replace(/'/g, "\\'") + '\')">' + escapeHtml(att) + '</span>';
+    });
+    cell.innerHTML = html;
+    grid.appendChild(cell);
+  }
+
+  const ultimoGiornoIso = ultimoGiorno.getDay();
+  const giorniDopo = ultimoGiornoIso === 0 ? 0 : 7 - ultimoGiornoIso;
+  for (let i = 0; i < giorniDopo; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell other-month';
+    cell.innerHTML = '<div class="cal-day-num" style="color:#adb5bd;">·</div>';
+    grid.appendChild(cell);
+  }
+}
+
+function apriDettaglioAttivita(nomeAttivita) {
+  loaderDash(true);
+  apiCall('getDettaglioAttivita', { nomeAttivita: nomeAttivita })
+    .then(function(res) { loaderDash(false); renderModaleAttivita(res); })
+    .catch(function(err) { loaderDash(false); alert('Errore: ' + err.message); });
+}
+
+function renderModaleAttivita(res) {
+  document.getElementById('modal-attivita-titolo').textContent = res.trovata ? ('📌 ' + res.nome + ' (' + res.totale + ' occorrenze)') : ('📌 ' + res.nome);
+  const body = document.getElementById('modal-attivita-body');
+  if (!res.trovata) {
+    body.innerHTML = '<div class="alert alert-warning">Non c\'è alcun calendario per l\'attività selezionata.</div>';
+  } else {
+    let html = '';
+    res.mesi.forEach(function(m) {
+      html += '<div class="detail-month-block"><h6>' + m.mese + ' ' + m.anno + '</h6><div class="d-flex flex-wrap gap-1">';
+      m.giorni.forEach(function(g) { html += '<span class="badge bg-light text-dark border">' + g.giornoSettimana + ' ' + g.numeroGiorno + '</span>'; });
+      html += '</div></div>';
+    });
+    body.innerHTML = html;
+  }
+  new bootstrap.Modal(document.getElementById('modalAttivita')).show();
+}
+
+function toggleVistaElenco() {
+  calState.vistaElenco = !calState.vistaElenco;
+  const btn = document.getElementById('btn-toggle-vista');
+  if (calState.vistaElenco) {
+    hide('vista-calendario'); show('vista-elenco');
+    btn.textContent = '📅 Calendario';
+    caricaElencoAttivita();
+  } else {
+    show('vista-calendario'); hide('vista-elenco');
+    btn.textContent = '📋 Elenco attività';
+  }
+}
+
+function caricaElencoAttivita() {
+  loaderDash(true);
+  apiCall('getElencoAttivita', {})
+    .then(function(res) { loaderDash(false); renderElencoAttivita(res); })
+    .catch(function(err) { loaderDash(false); alert('Errore: ' + err.message); });
+}
+
+function renderElencoAttivita(lista) {
+  const cont = document.getElementById('elenco-attivita-list');
+  if (!lista || lista.length === 0) { cont.innerHTML = '<div class="alert alert-light text-center">Nessuna attività trovata.</div>'; return; }
+  cont.innerHTML = '';
+  lista.forEach(function(a) {
+    const div = document.createElement('div');
+    div.className = 'elenco-attivita-item';
+    div.innerHTML = escapeHtml(a.nome) + ' <span class="badge bg-secondary">' + a.conteggio + '</span>';
+    div.onclick = function() { apriDettaglioAttivita(a.nome); };
+    cont.appendChild(div);
+  });
+}
+
+// ============================ ORARIO ============================
+function caricaOrario() {
+  loaderDash(true);
+  apiCall('getMioOrario', {})
+    .then(function(res) {
+      loaderDash(false);
+      if (res.error) return alert(res.error);
+      renderOrario(res);
+    })
+    .catch(function(err) { loaderDash(false); alert('Errore caricamento orario: ' + err.message); });
+}
+
+function renderOrario(data) {
+  document.getElementById('orario-nome-docente').textContent = 'Docente: ' + data.nome;
+
+  const giorni = ["lunedì","martedì","mercoledì","giovedì","venerdì"];
+  const orario = data.orario;
+
+  let html = '<table class="table table-bordered table-sm tbl-orario">';
+  html += '<thead><tr><th class="ora-label">Ora</th>';
+  giorni.forEach(function(g) {
+    html += '<th>' + g.charAt(0).toUpperCase() + g.slice(1) + '</th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  for (let ora = 1; ora <= 8; ora++) {
+    html += '<tr><td class="ora-label">' + ora + 'ª</td>';
+    giorni.forEach(function(g) {
+      const cella = (orario[g] && orario[g][ora]) ? orario[g][ora] : null;
+      if (cella) {
+        html += '<td class="bg-ora">';
+        html += '<strong>' + escapeHtml(cella.classe) + '</strong><br>';
+        if (cella.aula) html += '<small>Aula ' + escapeHtml(cella.aula) + '</small><br>';
+        if (cella.compresenti) html += '<small class="text-muted">con ' + escapeHtml(cella.compresenti) + '</small>';
+        html += '</td>';
+      } else {
+        html += '<td class="text-muted">—</td>';
+      }
+    });
+    html += '</tr>';
+  }
+
+  html += '</tbody></table>';
+  document.getElementById('orario-container').innerHTML = html;
+}
+
+// ============================ AVVIO APP ============================
+document.addEventListener('DOMContentLoaded', function() {
+  ['login-email','login-pwd'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+  });
+
+  // Se c'è un token salvato, provo a riusare la sessione
+  if (sessionToken) {
+    const savedUser = localStorage.getItem('cdc_user');
+    apiCall('checkSession', {})
+      .then(function(res) {
+        if (res && res.success) {
+          stateUser = savedUser ? JSON.parse(savedUser) : { email: res.email, displayName: res.email };
+          mostraDashboard();
+        }
+        // se non valida, apiCall ha già fatto logout()
+      })
+      .catch(function() { /* logout già gestito da apiCall */ });
+  }
+});
+</script>
+
+</body>
+</html>
