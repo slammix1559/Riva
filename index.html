@@ -840,6 +840,14 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(function() {});
   }
 });
+  // Registrazione del Service Worker (abilita PWA + offline)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js')
+      .then(function() { console.log('Service Worker registrato.'); })
+      .catch(function(err) { console.log('SW non registrato:', err); });
+  });
+}
 </script>
 
 </body>
