@@ -62,7 +62,7 @@
 
 <nav id="navbar" class="navbar navbar-light bg-white border-bottom hide">
   <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">📋 Gestione CdC <b>ITIS Riva</b></span>
+    <span class="navbar-brand mb-0 h1">RivApp <b><br>Il Riva a portata di click</b></span>
     <div>
       <span id="user-info" class="me-3 small-muted"></span>
       <button class="btn btn-outline-secondary btn-sm me-2" onclick="apriCambioPwd()">🔑 Password</button>
@@ -126,6 +126,7 @@
     <li class="nav-item hide" id="tab-coord-li"><a class="nav-link" id="tab-coord" href="#" onclick="switchTab('coord');return false;">CdC coordinati</a></li>
     <li class="nav-item hide" id="tab-cal-li"><a class="nav-link" id="tab-cal" href="#" onclick="switchTab('calendario');return false;">📅 Attività</a></li>
     <li class="nav-item hide" id="tab-orario-li"><a class="nav-link" id="tab-orario" href="#" onclick="switchTab('orario');return false;">🕐 Orario</a></li>
+    <li class="nav-item hide" id="tab-scrutini-li"><a class="nav-link" id="tab-scrutini" href="#" onclick="switchTab('scrutini');return false;">📊 Scrutini</a></li>
     <li class="nav-item hide" id="tab-segr-li"><a class="nav-link" id="tab-segr" href="#" onclick="switchTab('segr');return false;">Vista segreteria</a></li>
   </ul>
 
@@ -196,7 +197,13 @@
     <p class="small-muted" id="orario-nome-docente"></p>
     <div id="orario-container" class="table-responsive"></div>
   </div>
-
+  
+<div id="pane-scrutini" class="hide">
+    <h4>📊 I miei Scrutini</h4>
+    <p class="small-muted">Scrutini delle classi in cui insegni. Sola consultazione.</p>
+    <div id="scrutini-container"></div>
+  </div>
+  
   <div id="loader-dash" class="text-center mt-4 hide">
     <div class="spinner-border text-primary"></div>
   </div>
@@ -430,6 +437,7 @@ function caricaDashboard() {
         document.getElementById('tab-coord-li').classList.add('hide');
         document.getElementById('tab-cal-li').classList.remove('hide');
         document.getElementById('tab-orario-li').classList.remove('hide');
+        document.getElementById('tab-scrutini-li').classList.remove('hide');
         switchTab('segr');
         renderSegreteria(res.segreteria);
         return;
@@ -440,13 +448,14 @@ function caricaDashboard() {
       hide('tab-segr-li');
       show('tab-cal-li');
       show('tab-orario-li');
+      show('tab-scrutini-li');
       switchTab('cdc');
     })
     .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
 }
 
 function switchTab(t) {
-  ['cdc','coord','segr','calendario','orario'].forEach(function(x) {
+  ['cdc','coord','segr','calendario','orario','scrutini'].forEach(function(x) {
     document.getElementById('pane-' + x).classList.add('hide');
     const tab = document.getElementById('tab-' + x);
     if (tab) tab.classList.remove('active');
@@ -456,6 +465,7 @@ function switchTab(t) {
   if (tab) tab.classList.add('active');
   if (t === 'calendario' && !calState.datiMese) caricaCalendarioAttivita();
   if (t === 'orario') caricaOrario();
+  if (t === 'scrutini') caricaScrutini();
 }
 
 function renderCdcList(d) {
@@ -823,6 +833,50 @@ function renderOrario(data) {
   document.getElementById('orario-container').innerHTML = html;
 }
 
+// ============================ SCRUTINI ============================
+function caricaScrutini() {
+  loaderDash(true);
+  apiCall('getScrutini', {})
+    .then(function(res) {
+      loaderDash(false);
+      if (res.error) return alert('Errore: ' + res.error);
+      renderScrutini(res.scrutini || []);
+    })
+    .catch(function(err) { loaderDash(false); alert('Errore caricamento scrutini: ' + err.message); });
+}
+
+function renderScrutini(lista) {
+  const cont = document.getElementById('scrutini-container');
+  if (!lista || lista.length === 0) {
+    cont.innerHTML = '<div class="alert alert-light text-center">Nessuno scrutinio trovato per le tue classi.</div>';
+    return;
+  }
+  // Raggruppo per periodo (Gennaio / Giugno)
+  const perPeriodo = {};
+  lista.forEach(function(s) {
+    if (!perPeriodo[s.periodo]) perPeriodo[s.periodo] = [];
+    perPeriodo[s.periodo].push(s);
+  });
+  let html = '';
+  Object.keys(perPeriodo).forEach(function(periodo) {
+    html += '<h5 class="mt-3 mb-2">' + escapeHtml(periodo) + '</h5>';
+    html += '<div class="list-group mb-3">';
+    perPeriodo[periodo].forEach(function(s) {
+      html += '<div class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2' +
+              (s.passato ? ' cdc-passato' : '') + '">';
+      html += '<div><strong>Classe ' + escapeHtml(s.classe) + '</strong><br>' +
+              '<small class="small-muted">' + escapeHtml(s.dataIT) + ' · ' +
+              escapeHtml(s.oraInizio) + '-' + escapeHtml(s.oraFine) +
+              ' (' + s.durataMin + ' min)</small></div>';
+      html += '<span class="badge ' + (s.passato ? 'bg-secondary' : 'bg-primary') + '">' +
+              (s.passato ? 'Concluso' : 'Da svolgere') + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  cont.innerHTML = html;
+}
+  
 document.addEventListener('DOMContentLoaded', function() {
   ['login-email','login-pwd'].forEach(function(id) {
     const el = document.getElementById(id);
