@@ -286,19 +286,16 @@ const GIORNI_BREVI = ["LUN","MAR","MER","GIO","VEN","SAB","DOM"];
  * Ritorna una Promise che risolve con l'oggetto JSON di risposta.
  */
 async function apiCall(action, payload) {
+  const params = new URLSearchParams({
+    action: action,
+    payload: JSON.stringify(payload || {}),
+    token: sessionToken || ''
+  });
   let res;
   try {
-    res = await fetch(API_URL, {
-      method: 'POST',
-      redirect: 'follow',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8'
-      },
-      body: JSON.stringify({
-        action: action,
-        payload: payload || {},
-        token: sessionToken
-      })
+    res = await fetch(API_URL + '?' + params.toString(), {
+      method: 'GET',
+      redirect: 'follow'
     });
   } catch (netErr) {
     throw new Error('Impossibile contattare il server. Controlla la connessione.');
