@@ -290,7 +290,10 @@ async function apiCall(action, payload) {
   try {
     res = await fetch(API_URL, {
       method: 'POST',
-      // NIENTE header Content-Type: così resta text/plain e niente preflight CORS
+      redirect: 'follow',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
       body: JSON.stringify({
         action: action,
         payload: payload || {},
@@ -306,7 +309,6 @@ async function apiCall(action, payload) {
   } catch (parseErr) {
     throw new Error('Risposta server non valida.');
   }
-  // Sessione scaduta: pulisco e rimando al login
   if (data && data.code === 'AUTH') {
     sessionToken = null;
     localStorage.removeItem('cdc_token');
