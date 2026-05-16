@@ -9,17 +9,17 @@
   "background_color": "#f0f2f5",
   "theme_color": "#1a73e8",
   "icons": [
-    {
-      "src": "https://drive.google.com/file/d/1s9TF_rcjp_qMcGkG3YHyfcS6F9IlluCs/view?usp=drive_link",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://drive.google.com/file/d/1Qk43XAwA9roeQ4E2GmtQMDn_nD1e9BxU/view?usp=sharing",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    }
-  ]
+  {
+    "src": "./icon-192.png",
+    "sizes": "192x192",
+    "type": "image/png",
+    "purpose": "any"
+  },
+  {
+    "src": "./icon-512.png",
+    "sizes": "512x512",
+    "type": "image/png",
+    "purpose": "maskable any"
+  }
+]
 }
