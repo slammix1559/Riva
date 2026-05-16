@@ -17,13 +17,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
   <style>
-    body {
-      padding-top: env(safe-area-inset-top);
-      margin: 0;
-      background:#f0f2f5;
-      min-height:100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    body { padding-top: env(safe-area-inset-top); margin:0; background:#f0f2f5; min-height:100vh;
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .navbar-brand b { color:#0d6efd; }
     .card { border-radius:1rem; border:none; box-shadow:0 4px 14px rgba(0,0,0,.06); }
     .login-wrap { min-height:90vh; display:flex; align-items:center; }
@@ -40,7 +35,7 @@
     .row-sotto { background:#fff5f5; }
     .hide { display:none !important; }
     .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
-    .cal-cell { min-height:80px; border:1px solid #dee2e6; border-radius:6px; padding:4px; background:#fff; cursor:default; }
+    .cal-cell { min-height:80px; border:1px solid #dee2e6; border-radius:6px; padding:4px; background:#fff; }
     .cal-cell.today { border:2px solid #0d6efd; background:#f0f7ff; }
     .cal-cell.other-month { background:#f8f9fa; color:#adb5bd; }
     .cal-cell-header { text-align:center; font-weight:600; font-size:.85rem; background:#e9ecef; padding:6px 2px; border-radius:4px; }
@@ -65,7 +60,6 @@
 </head>
 <body>
 
-<!-- ============================ NAVBAR ============================ -->
 <nav id="navbar" class="navbar navbar-light bg-white border-bottom hide">
   <div class="container-fluid">
     <span class="navbar-brand mb-0 h1">📋 Gestione CdC <b>ITIS Riva</b></span>
@@ -77,7 +71,6 @@
   </div>
 </nav>
 
-<!-- ============================ LOGIN ============================ -->
 <div id="view-login" class="container login-wrap">
   <div class="card p-4 mx-auto" style="max-width:420px; width:100%;">
     <h3 class="text-center mb-1">📋 Gestione CdC</h3>
@@ -127,9 +120,7 @@
   </div>
 </div>
 
-<!-- ============================ DASHBOARD ============================ -->
 <div id="view-dashboard" class="container my-4 hide">
-
   <ul class="nav nav-tabs mb-3" id="tabs">
     <li class="nav-item"><a class="nav-link active" id="tab-cdc" href="#" onclick="switchTab('cdc');return false;">I miei CdC</a></li>
     <li class="nav-item hide" id="tab-coord-li"><a class="nav-link" id="tab-coord" href="#" onclick="switchTab('coord');return false;">CdC coordinati</a></li>
@@ -211,7 +202,6 @@
   </div>
 </div>
 
-<!-- MODALE CAMBIO PASSWORD -->
 <div class="modal fade" id="modalPwd" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -231,7 +221,6 @@
   </div>
 </div>
 
-<!-- MODALE CONFERMA SOTTO SOGLIA -->
 <div class="modal fade" id="modalSottoSoglia" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -249,7 +238,6 @@
   </div>
 </div>
 
-<!-- MODALE DETTAGLIO ATTIVITÀ -->
 <div class="modal fade" id="modalAttivita" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -264,15 +252,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ========================================================================
-// ⚠️⚠️⚠️  INCOLLA QUI SOTTO IL TUO URL /exec  ⚠️⚠️⚠️
-// Deve essere nel formato: https://script.google.com/macros/s/.../exec
-// (SENZA /u/1/  ! )
-// ========================================================================
+// ======================= URL BACKEND (gia' corretto) =======================
 const API_URL = "https://script.google.com/macros/s/AKfycbx1n4GG2ifNYkvEBeHTPhKxxxgJckfA9NhEx5VPJEroJn68KF3Ex_w9StYIkif9Y63mZw/exec";
-// ========================================================================
+// ===========================================================================
 
-// ============================ STATE ============================
 let stateUser = null;
 let stateDashboard = null;
 let pendingForceEsonero = null;
@@ -280,11 +263,7 @@ let sessionToken = localStorage.getItem('cdc_token') || null;
 
 const GIORNI_BREVI = ["LUN","MAR","MER","GIO","VEN","SAB","DOM"];
 
-// ============================ API LAYER ============================
-/**
- * Chiama l'API Apps Script. Sostituisce google.script.run.
- * Ritorna una Promise che risolve con l'oggetto JSON di risposta.
- */
+// ======================= API LAYER (GET, niente CORS) =======================
 async function apiCall(action, payload) {
   const params = new URLSearchParams({
     action: action,
@@ -293,10 +272,7 @@ async function apiCall(action, payload) {
   });
   let res;
   try {
-    res = await fetch(API_URL + '?' + params.toString(), {
-      method: 'GET',
-      redirect: 'follow'
-    });
+    res = await fetch(API_URL + '?' + params.toString(), { method: 'GET', redirect: 'follow' });
   } catch (netErr) {
     throw new Error('Impossibile contattare il server. Controlla la connessione.');
   }
@@ -315,7 +291,6 @@ async function apiCall(action, payload) {
   return data;
 }
 
-// ============================ HELPERS UI ============================
 function show(id) { document.getElementById(id).classList.remove('hide'); }
 function hide(id) { document.getElementById(id).classList.add('hide'); }
 function showError(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.remove('hide'); }
@@ -325,18 +300,13 @@ function loaderLogin(on) { on ? show('loader-login') : hide('loader-login'); }
 function loaderDash(on)  { on ? show('loader-dash')  : hide('loader-dash');  }
 
 function _formatDateISO(d) {
-  const yy = d.getFullYear();
-  const mm = ("0" + (d.getMonth() + 1)).slice(-2);
-  const dd = ("0" + d.getDate()).slice(-2);
-  return yy + "-" + mm + "-" + dd;
+  return d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0"+d.getDate()).slice(-2);
 }
-
 function escapeHtml(s) {
   if (s === null || s === undefined) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-// ============================ LOGIN ============================
 function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pwd   = document.getElementById('login-pwd').value;
@@ -344,13 +314,11 @@ function doLogin() {
   if (!email || !pwd) return showError('login-err', 'Inserisci email e password.');
   loaderLogin(true);
   document.getElementById('btn-login').disabled = true;
-
   apiCall('login', { email: email, password: pwd })
     .then(function(res) {
       loaderLogin(false);
       document.getElementById('btn-login').disabled = false;
       if (!res.success) return showError('login-err', res.message || 'Errore login.');
-      // Salvo il token e l'utente
       sessionToken = res.sessionToken;
       localStorage.setItem('cdc_token', sessionToken);
       stateUser = res.user;
@@ -366,15 +334,9 @@ function doLogin() {
 }
 
 function logout() {
-  // Tento di revocare il token lato server (best effort, non blocco)
-  if (sessionToken) {
-    apiCall('logout', {}).catch(function(){});
-  }
-  sessionToken = null;
-  stateUser = null;
-  stateDashboard = null;
-  localStorage.removeItem('cdc_token');
-  localStorage.removeItem('cdc_user');
+  if (sessionToken) { apiCall('logout', {}).catch(function(){}); }
+  sessionToken = null; stateUser = null; stateDashboard = null;
+  localStorage.removeItem('cdc_token'); localStorage.removeItem('cdc_user');
   document.getElementById('login-pwd').value = '';
   hide('view-dashboard'); hide('navbar');
   show('view-login');
@@ -382,7 +344,6 @@ function logout() {
   document.getElementById('login-form').classList.remove('hide');
 }
 
-// ============================ RESET PASSWORD ============================
 function apriResetStep1() {
   hide('login-form'); show('reset-step1');
   clearErr('reset1-err'); hide('reset1-ok');
@@ -428,7 +389,6 @@ function confermaOTP() {
     .catch(function(err) { loaderLogin(false); showError('reset2-err', err.message); });
 }
 
-// ============================ CAMBIO PASSWORD ============================
 function apriCambioPwd() {
   document.getElementById('pwd-old').value = '';
   document.getElementById('pwd-new').value = '';
@@ -452,11 +412,8 @@ function cambiaPwd() {
     .catch(function(err) { showError('pwd-err', err.message); });
 }
 
-// ============================ DASHBOARD ============================
 function mostraDashboard() {
-  hide('view-login');
-  show('view-dashboard');
-  show('navbar');
+  hide('view-login'); show('view-dashboard'); show('navbar');
   document.getElementById('user-info').textContent = stateUser.displayName + ' (' + stateUser.email + ')';
   caricaDashboard();
 }
@@ -468,7 +425,6 @@ function caricaDashboard() {
       loaderDash(false);
       if (res.error) return alert('Errore: ' + res.error);
       stateDashboard = res;
-
       if (res.isSegreteria) {
         document.getElementById('tab-segr-li').classList.remove('hide');
         document.getElementById('tab-coord-li').classList.add('hide');
@@ -478,7 +434,6 @@ function caricaDashboard() {
         renderSegreteria(res.segreteria);
         return;
       }
-
       renderCdcList(res);
       if (res.isCoordinatore) { show('tab-coord-li'); renderCoordList(res); }
       else { hide('tab-coord-li'); }
@@ -490,7 +445,6 @@ function caricaDashboard() {
     .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
 }
 
-// ============================ SWITCH TAB ============================
 function switchTab(t) {
   ['cdc','coord','segr','calendario','orario'].forEach(function(x) {
     document.getElementById('pane-' + x).classList.add('hide');
@@ -500,33 +454,24 @@ function switchTab(t) {
   document.getElementById('pane-' + t).classList.remove('hide');
   const tab = document.getElementById('tab-' + t);
   if (tab) tab.classList.add('active');
-
-  if (t === 'calendario' && !calState.datiMese) {
-    caricaCalendarioAttivita();
-  }
-  if (t === 'orario') {
-    caricaOrario();
-  }
+  if (t === 'calendario' && !calState.datiMese) caricaCalendarioAttivita();
+  if (t === 'orario') caricaOrario();
 }
 
-// ============================ RENDER LISTA CDC DOCENTE ============================
 function renderCdcList(d) {
   document.getElementById('cnt-tot').textContent = d.oreTotali;
   document.getElementById('cnt-soglia').textContent = d.soglia;
   aggiornaContatoreOre(d.orePartecipazione, d.soglia);
-
   const list = document.getElementById('cdc-list');
   list.innerHTML = '';
   if (!d.cdc || d.cdc.length === 0) { show('cdc-empty'); return; }
   hide('cdc-empty');
-
   d.cdc.forEach(function(c) {
     const passato = c.passato;
     const stato = c.stato;
     const cls = ['list-group-item','d-flex','justify-content-between','align-items-center','flex-wrap','gap-2'];
     if (passato) cls.push('cdc-passato');
     if (c.coordinata) cls.push('cdc-coordinata');
-
     const left = document.createElement('div');
     left.innerHTML =
       '<strong>Classe ' + escapeHtml(c.classe) + '</strong>' +
@@ -534,7 +479,6 @@ function renderCdcList(d) {
       '<br><small class="small-muted">' + escapeHtml(c.dataIT) + ' · ' + escapeHtml(c.oraInizio) + '-' + escapeHtml(c.oraFine) +
       ' (' + c.durataOre + 'h)' + (c.aula ? ' · Aula ' + escapeHtml(c.aula) : '') + '</small>' +
       '<div class="mt-1 stato-' + stato + '">Stato: ' + statoLabel(stato) + '</div>';
-
     const right = document.createElement('div');
     if (passato) {
       right.innerHTML = '<span class="badge bg-secondary">Concluso</span>';
@@ -543,15 +487,12 @@ function renderCdcList(d) {
       btnPart.className = 'btn btn-sm me-1 ' + (stato === 'PARTECIPA' ? 'btn-success' : 'btn-outline-success');
       btnPart.textContent = 'Partecipo';
       btnPart.onclick = function() { cambiaStato(c.id, 'PARTECIPA'); };
-
       const btnEson = document.createElement('button');
       btnEson.className = 'btn btn-sm ' + (stato === 'ESONERATO' ? 'btn-warning' : 'btn-outline-warning');
       btnEson.textContent = 'Esonero';
       btnEson.onclick = function() { cambiaStato(c.id, 'ESONERATO'); };
-
       right.appendChild(btnPart); right.appendChild(btnEson);
     }
-
     const div = document.createElement('div');
     div.className = cls.join(' ');
     div.appendChild(left); div.appendChild(right);
@@ -604,7 +545,6 @@ function confermaForzaEsonero() {
     .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
 }
 
-// ============================ RENDER VISTA COORDINATORE ============================
 function renderCoordList(d) {
   const list = document.getElementById('coord-list');
   list.innerHTML = '';
@@ -638,12 +578,10 @@ function renderCoordDetail(res) {
   const cont = document.getElementById('coord-docenti');
   cont.innerHTML = '';
   if (!res.docenti || res.docenti.length === 0) { cont.innerHTML = '<div class="alert alert-light">Nessun docente trovato per questa classe.</div>'; show('coord-detail'); return; }
-
   const tbl = document.createElement('table');
   tbl.className = 'table table-sm align-middle';
   tbl.innerHTML = '<thead class="table-light"><tr><th>Docente</th><th>Stato</th><th class="text-end">Azioni</th></tr></thead>';
   const tbody = document.createElement('tbody');
-
   res.docenti.forEach(function(d) {
     const tr = document.createElement('tr');
     const tdNome = document.createElement('td'); tdNome.textContent = d.displayName;
@@ -672,7 +610,6 @@ function coordCambiaStato(emailDocente, nuovoStato) {
     .catch(function(err) { loaderDash(false); alert('Errore: ' + err.message); });
 }
 
-// ============================ RENDER VISTA SEGRETERIA ============================
 let segrData = null;
 
 function renderSegreteria(s) { segrData = s.docenti || []; filtraSegr(); }
@@ -682,10 +619,8 @@ function filtraSegr() {
   const tbody = document.getElementById('segr-tbody');
   tbody.innerHTML = '';
   if (!segrData) return;
-
   const rows = segrData.filter(function(d) { return !f || (d.displayName||'').toLowerCase().indexOf(f)>=0 || (d.email||'').toLowerCase().indexOf(f)>=0; });
   if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-center small-muted py-3">Nessun docente trovato.</td></tr>'; return; }
-
   rows.forEach(function(d) {
     const tr = document.createElement('tr');
     if (d.sotto) tr.className = 'row-sotto';
@@ -696,7 +631,6 @@ function filtraSegr() {
       '<td>' + (d.sotto ? '<span class="badge bg-danger">Sotto soglia</span>' : '<span class="badge bg-success">OK</span>') + '</td>';
     tbody.appendChild(tr);
   });
-
   const ricap = document.getElementById('segr-ricap');
   if (ricap) {
     const tot = segrData.length, sotto = segrData.filter(function(d){return d.sotto;}).length, noLogin = segrData.filter(function(d){return !d.haAccount;}).length;
@@ -704,19 +638,14 @@ function filtraSegr() {
   }
 }
 
-// ============================ CALENDARIO ATTIVITÀ ============================
 let calState = {
   meseCorrente: new Date().getMonth() + 1,
   annoCorrente: new Date().getFullYear(),
-  datiMese: null,
-  mesiDisponibili: [],
-  vistaElenco: false
+  datiMese: null, mesiDisponibili: [], vistaElenco: false
 };
-
 const oggiInit = new Date();
 if (oggiInit.getFullYear() < 2025 || (oggiInit.getFullYear() === 2025 && oggiInit.getMonth() < 8)) {
-  calState.meseCorrente = 9;
-  calState.annoCorrente = 2025;
+  calState.meseCorrente = 9; calState.annoCorrente = 2025;
 }
 
 function caricaCalendarioAttivita() {
@@ -732,12 +661,10 @@ function caricaCalendarioAttivita() {
 }
 
 function cambiaMese(delta) {
-  let m = calState.meseCorrente + delta;
-  let a = calState.annoCorrente;
+  let m = calState.meseCorrente + delta, a = calState.annoCorrente;
   if (m < 1) { m = 12; a--; }
   if (m > 12) { m = 1; a++; }
-  calState.meseCorrente = m;
-  calState.annoCorrente = a;
+  calState.meseCorrente = m; calState.annoCorrente = a;
   caricaCalendarioAttivita();
 }
 
@@ -752,10 +679,8 @@ function vaiAOggi() {
 function renderCalendario() {
   const d = calState.datiMese;
   if (!d) return;
-
   const MESI = ["","Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
   document.getElementById('cal-titolo-mese').textContent = MESI[d.mese] + " " + d.anno;
-
   const headerGiorni = document.getElementById('cal-header-giorni');
   headerGiorni.innerHTML = '';
   GIORNI_BREVI.forEach(function(g) {
@@ -764,36 +689,27 @@ function renderCalendario() {
     cell.textContent = g;
     headerGiorni.appendChild(cell);
   });
-
   const grid = document.getElementById('cal-grid');
   grid.innerHTML = '';
-
   const primoGiorno = new Date(d.anno, d.mese - 1, 1);
   const ultimoGiorno = new Date(d.anno, d.mese, 0);
   const giorniNelMese = ultimoGiorno.getDate();
-
   let primoGiornoIso = primoGiorno.getDay();
   primoGiornoIso = primoGiornoIso === 0 ? 7 : primoGiornoIso;
-
   for (let i = 1; i < primoGiornoIso; i++) {
     const cell = document.createElement('div');
     cell.className = 'cal-cell other-month';
     cell.innerHTML = '<div class="cal-day-num" style="color:#adb5bd;">·</div>';
     grid.appendChild(cell);
   }
-
-  const oggi = new Date();
-  const oggiISO = _formatDateISO(oggi);
-
+  const oggiISO = _formatDateISO(new Date());
   for (let g = 1; g <= giorniNelMese; g++) {
     const dataObj = new Date(d.anno, d.mese - 1, g);
     const dataISO = _formatDateISO(dataObj);
     const attivitaGiorno = (d.attivitaPerGiorno && d.attivitaPerGiorno[dataISO]) || [];
-
     const cell = document.createElement('div');
     cell.className = 'cal-cell';
     if (dataISO === oggiISO) cell.classList.add('today');
-
     let html = '<div class="cal-day-num">' + g + '</div>';
     attivitaGiorno.forEach(function(att) {
       html += '<span class="cal-attivita-badge" onclick="event.stopPropagation();apriDettaglioAttivita(\'' +
@@ -802,7 +718,6 @@ function renderCalendario() {
     cell.innerHTML = html;
     grid.appendChild(cell);
   }
-
   const ultimoGiornoIso = ultimoGiorno.getDay();
   const giorniDopo = ultimoGiornoIso === 0 ? 0 : 7 - ultimoGiornoIso;
   for (let i = 0; i < giorniDopo; i++) {
@@ -870,7 +785,6 @@ function renderElencoAttivita(lista) {
   });
 }
 
-// ============================ ORARIO ============================
 function caricaOrario() {
   loaderDash(true);
   apiCall('getMioOrario', {})
@@ -884,24 +798,18 @@ function caricaOrario() {
 
 function renderOrario(data) {
   document.getElementById('orario-nome-docente').textContent = 'Docente: ' + data.nome;
-
   const giorni = ["lunedì","martedì","mercoledì","giovedì","venerdì"];
   const orario = data.orario;
-
   let html = '<table class="table table-bordered table-sm tbl-orario">';
   html += '<thead><tr><th class="ora-label">Ora</th>';
-  giorni.forEach(function(g) {
-    html += '<th>' + g.charAt(0).toUpperCase() + g.slice(1) + '</th>';
-  });
+  giorni.forEach(function(g) { html += '<th>' + g.charAt(0).toUpperCase() + g.slice(1) + '</th>'; });
   html += '</tr></thead><tbody>';
-
   for (let ora = 1; ora <= 8; ora++) {
     html += '<tr><td class="ora-label">' + ora + 'ª</td>';
     giorni.forEach(function(g) {
       const cella = (orario[g] && orario[g][ora]) ? orario[g][ora] : null;
       if (cella) {
-        html += '<td class="bg-ora">';
-        html += '<strong>' + escapeHtml(cella.classe) + '</strong><br>';
+        html += '<td class="bg-ora"><strong>' + escapeHtml(cella.classe) + '</strong><br>';
         if (cella.aula) html += '<small>Aula ' + escapeHtml(cella.aula) + '</small><br>';
         if (cella.compresenti) html += '<small class="text-muted">con ' + escapeHtml(cella.compresenti) + '</small>';
         html += '</td>';
@@ -911,19 +819,15 @@ function renderOrario(data) {
     });
     html += '</tr>';
   }
-
   html += '</tbody></table>';
   document.getElementById('orario-container').innerHTML = html;
 }
 
-// ============================ AVVIO APP ============================
 document.addEventListener('DOMContentLoaded', function() {
   ['login-email','login-pwd'].forEach(function(id) {
     const el = document.getElementById(id);
     if (el) el.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
   });
-
-  // Se c'è un token salvato, provo a riusare la sessione
   if (sessionToken) {
     const savedUser = localStorage.getItem('cdc_user');
     apiCall('checkSession', {})
@@ -932,9 +836,8 @@ document.addEventListener('DOMContentLoaded', function() {
           stateUser = savedUser ? JSON.parse(savedUser) : { email: res.email, displayName: res.email };
           mostraDashboard();
         }
-        // se non valida, apiCall ha già fatto logout()
       })
-      .catch(function() { /* logout già gestito da apiCall */ });
+      .catch(function() {});
   }
 });
 </script>
