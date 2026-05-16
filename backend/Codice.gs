@@ -38,14 +38,18 @@ const MAPPA_GIORNO = {
 // ============================ ENTRY POINT WEBAPP ============================
 
 function doGet(e) {
-  var output = HtmlService.createTemplateFromFile('Index').evaluate()
-    .setTitle('Gestione CdC - ITIS G. Riva')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  
-  // Questa riga è quella che abilita la modalità "App" su Android e iOS
-  output.addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
-  
-  return output;
+  // Se non ci sono parametri, è solo un health check
+  if (!e || !e.parameter || !e.parameter.action) {
+    return _apiResp({ ok: true, service: "CdC-API", version: 2 });
+  }
+  // Altrimenti, tratto i parametri come una richiesta API
+  const action = String(e.parameter.action || "").trim();
+  let payload = {};
+  if (e.parameter.payload) {
+    try { payload = JSON.parse(e.parameter.payload); } catch(err) { payload = {}; }
+  }
+  const token = e.parameter.token || null;
+  return _routeApi(action, payload, token, "");
 }
 
 function include(filename) {
