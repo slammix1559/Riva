@@ -1,7 +1,7 @@
 {
-  "name": "Gestione CdC - ITIS G. Riva",
-  "short_name": "CdC Riva",
-  "description": "Gestione Consigli di Classe ITIS G. Riva - Saronno",
+  "name": "RivApp - Il Riva a portata di click",
+  "short_name": "RivApp",
+  "description": "App dell'I.T.I.S. Giulio Riva di Saronno",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
