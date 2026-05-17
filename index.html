@@ -58,32 +58,47 @@
     .tbl-orario td.bg-ora { background:#dbeafe; }
 
     /* --- Brand centrale: logo + scritta nera --- */
-    .brand-center { display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.1; }
+    .navbar-inner { display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
+      gap:8px 12px; width:100%; padding:8px 0; }
+    .brand-center { display:flex; flex-direction:column; align-items:center; justify-content:center;
+      line-height:1.1; flex:1 1 100%; order:1; }
     .brand-center img { height:48px; width:auto; display:block; }
-    .brand-center .brand-text { color:#000; font-weight:700; font-size:1rem; margin-top:2px; }
+    .brand-center .brand-text { color:#000; font-weight:700; font-size:1rem; margin-top:2px; text-align:center; }
+    .navbar-user { order:2; flex:1 1 100%; text-align:center; }
+    .navbar-actions { order:3; flex:1 1 100%; display:flex; justify-content:center; gap:8px; }
+    /* Su schermi larghi: tutto su una riga, logo centrato, azioni a destra */
+    @media (min-width:768px) {
+      .navbar-inner { flex-wrap:nowrap; justify-content:flex-start; position:relative; min-height:64px; }
+      .brand-center { flex:0 0 auto; order:2; position:absolute; left:50%; transform:translateX(-50%); }
+      .navbar-user { order:1; flex:0 1 auto; text-align:left; }
+      .navbar-actions { order:3; flex:0 0 auto; margin-left:auto; }
+    }
   </style>
 </head>
 <body>
 
 <nav id="navbar" class="navbar navbar-light bg-white border-bottom hide">
-  <div class="container-fluid position-relative d-flex align-items-center" style="min-height:64px;">
-    <a class="navbar-brand brand-center mx-auto mb-0 position-absolute start-50 translate-middle-x" href="#">
-      <img src="icon-512.png" alt="RivApp">
-      <span class="brand-text">Il Riva a portata di click</span>
-    </a>
-    <div class="ms-auto d-flex align-items-center">
-      <span id="user-info" class="me-3 small-muted"></span>
-      <button class="btn btn-outline-secondary btn-sm me-2" onclick="apriCambioPwd()">🔑 Password</button>
-      <button class="btn btn-outline-danger btn-sm" onclick="logout()">Esci</button>
+  <div class="container-fluid">
+    <div class="navbar-inner">
+      <a class="navbar-brand brand-center mb-0" href="#">
+        <img src="icon-512.png" alt="RivApp">
+        <span class="brand-text">Il Riva a portata di click</span>
+      </a>
+      <span id="user-info" class="navbar-user small-muted"></span>
+      <div class="navbar-actions">
+        <button class="btn btn-outline-secondary btn-sm" onclick="apriCambioPwd()">🔑 Password</button>
+        <button class="btn btn-outline-danger btn-sm" onclick="logout()">Esci</button>
+      </div>
     </div>
   </div>
 </nav>
 
 <div id="view-login" class="container login-wrap">
   <div class="card p-4 mx-auto" style="max-width:420px; width:100%;">
-    <img src="icon-512.png" alt="RivApp">
-    <h3 class="text-center mb-1">RivApp</h3>
-    <p class="text-center small-muted mb-4">ITIS G. Riva - Saronno</p>
+    <a class="navbar-brand brand-center mb-0" href="#">
+        <img src="icon-512.png" alt="RivApp">
+        <span class="brand-text">Il Riva a portata di click</span>
+      </a>
 
     <div id="login-form">
       <div class="mb-3">
