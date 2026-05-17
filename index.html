@@ -56,14 +56,22 @@
     .tbl-orario td { vertical-align:middle; text-align:center; min-width:100px; }
     .tbl-orario td.ora-label { background:#e9ecef; font-weight:700; }
     .tbl-orario td.bg-ora { background:#dbeafe; }
+
+    /* --- Brand centrale: logo + scritta nera --- */
+    .brand-center { display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.1; }
+    .brand-center img { height:48px; width:auto; display:block; }
+    .brand-center .brand-text { color:#000; font-weight:700; font-size:1rem; margin-top:2px; }
   </style>
 </head>
 <body>
 
 <nav id="navbar" class="navbar navbar-light bg-white border-bottom hide">
-  <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">RivApp <b><br>Il Riva a portata di click</b></span>
-    <div>
+  <div class="container-fluid position-relative d-flex align-items-center" style="min-height:64px;">
+    <a class="navbar-brand brand-center mx-auto mb-0 position-absolute start-50 translate-middle-x" href="#">
+      <img src="icon-512.png" alt="RivApp">
+      <span class="brand-text">Il Riva a portata di click</span>
+    </a>
+    <div class="ms-auto d-flex align-items-center">
       <span id="user-info" class="me-3 small-muted"></span>
       <button class="btn btn-outline-secondary btn-sm me-2" onclick="apriCambioPwd()">🔑 Password</button>
       <button class="btn btn-outline-danger btn-sm" onclick="logout()">Esci</button>
@@ -73,6 +81,7 @@
 
 <div id="view-login" class="container login-wrap">
   <div class="card p-4 mx-auto" style="max-width:420px; width:100%;">
+    <img src="icon-512.png" alt="RivApp">
     <h3 class="text-center mb-1">RivApp</h3>
     <p class="text-center small-muted mb-4">ITIS G. Riva - Saronno</p>
 
@@ -260,7 +269,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // ======================= URL BACKEND (gia' corretto) =======================
-const API_URL = "https://script.google.com/macros/s/AKfycbx1n4GG2ifNYkvEBeHTPhKxxxgJckfA9NhEx5VPJEroJn68KF3Ex_w9StYIkif9Y63mZw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx1n4GG2ifNYkvEBeHTPhKxxxgJckfA9NhEx_w9StYIkif9Y63mZw/exec";
 // ===========================================================================
 
 let stateUser = null;
