@@ -97,6 +97,12 @@
       line-height:1.1; flex:1 1 100%; order:1; }
     .brand-center img { height:60px; width:auto; display:block; }
     .brand-center .brand-text { color:#000; font-weight:700; font-size:1rem; margin-top:2px; text-align:center; }
+    /* --- Brand nella card di login: logo + scritta ordinati SOPRA il form --- */
+    .brand-login { display:flex; flex-direction:column; align-items:center;
+      justify-content:center; text-align:center; margin-bottom:1.25rem; }
+    .brand-login img { height:72px; width:auto; display:block; }
+    .brand-login .brand-text { color:#000; font-weight:700; font-size:1.05rem;
+      margin-top:8px; line-height:1.2; }
     .navbar-user { order:2; flex:1 1 100%; text-align:center; }
     .navbar-actions { order:3; flex:1 1 100%; display:flex; justify-content:center; gap:8px; }
     /* Su schermi larghi: tutto su una riga, logo centrato, azioni a destra */
@@ -128,10 +134,10 @@
 
 <div id="view-login" class="container login-wrap">
   <div class="card p-4 mx-auto" style="max-width:420px; width:100%;">
-    <a class="navbar-brand brand-center mb-0" href="#">
-        <img src="icon-512.png" alt="RivApp">
-        <span class="brand-text">Il Riva a portata di click</span>
-      </a>
+    <div class="brand-login">
+      <img src="icon-512.png" alt="RivApp">
+      <span class="brand-text">Il Riva a portata di click</span>
+    </div>
 
     <div id="login-form">
       <div class="mb-3">
