@@ -57,6 +57,39 @@
     .tbl-orario td.ora-label { background:#e9ecef; font-weight:700; }
     .tbl-orario td.bg-ora { background:#dbeafe; }
 
+    /* ===================================================================
+       VISTA SMARTPHONE — griglie compatte che entrano nello schermo
+       (max-width:575px = solo telefoni; tablet e desktop NON toccati)
+       =================================================================== */
+    @media (max-width:575px) {
+
+      /* --- ORARIO: griglia compatta a tutta larghezza, niente scroll --- */
+      #orario-container { overflow-x:hidden; }
+      .tbl-orario { width:100%; table-layout:fixed; font-size:.6rem;
+        border-collapse:collapse; margin-bottom:0; }
+      .tbl-orario th, .tbl-orario td { padding:2px 1px !important;
+        min-width:0 !important; word-break:break-word; line-height:1.15; }
+      .tbl-orario th { font-size:.6rem; }
+      /* prima colonna "Ora" stretta, le altre 5 si dividono lo spazio */
+      .tbl-orario th:first-child, .tbl-orario td.ora-label { width:9%; }
+      .tbl-orario th:not(:first-child), .tbl-orario td:not(.ora-label) { width:18.2%; }
+      .tbl-orario td strong { font-size:.62rem; }
+      .tbl-orario td small { font-size:.52rem; display:block; line-height:1.1; }
+
+      /* --- CALENDARIO: griglia mensile compatta a tutta larghezza --- */
+      .cal-grid { gap:1px; }
+      .cal-cell { min-height:46px; padding:1px; border-radius:3px; }
+      .cal-cell-header { font-size:.62rem; padding:3px 0; border-radius:2px; }
+      .cal-day-num { font-size:.62rem; margin-bottom:0; }
+      /* il badge attività diventa un pallino: il testo lo si legge nel popup */
+      .cal-attivita-badge { font-size:0; padding:0; margin:1px auto;
+        width:8px; height:8px; border-radius:50%; }
+      .cal-nav { gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+      .cal-nav h5 { font-size:1rem; min-width:0; flex:1 1 100%; order:-1; }
+      .cal-nav button { min-width:34px; padding:.2rem .4rem; }
+      .cal-nav .ms-3 { margin-left:0 !important; }
+    }
+
     /* --- Brand centrale: logo + scritta nera --- */
     .navbar-inner { display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
       gap:8px 12px; width:100%; padding:8px 0; }
@@ -79,11 +112,11 @@
 
 <nav id="navbar" class="navbar navbar-light bg-white border-bottom hide">
   <div class="container-fluid">
-    <div class="navbar-inner">
-      <a class="navbar-brand brand-center mb-0" href="#">
+     <a class="navbar-brand brand-center mb-0" href="#">
         <img src="icon-512.png" alt="RivApp">
         <span class="brand-text">Il Riva a portata di click</span>
       </a>
+    <div class="navbar-inner">
       <span id="user-info" class="navbar-user small-muted"></span>
       <div class="navbar-actions">
         <button class="btn btn-outline-secondary btn-sm" onclick="apriCambioPwd()">🔑 Password</button>
@@ -746,10 +779,19 @@ function renderCalendario() {
     if (dataISO === oggiISO) cell.classList.add('today');
     let html = '<div class="cal-day-num">' + g + '</div>';
     attivitaGiorno.forEach(function(att) {
-      html += '<span class="cal-attivita-badge" onclick="event.stopPropagation();apriDettaglioAttivita(\'' +
+      html += '<span class="cal-attivita-badge" title="' + escapeHtml(att) + '" onclick="event.stopPropagation();apriDettaglioAttivita(\'' +
         escapeHtml(att).replace(/'/g, "\\'") + '\')">' + escapeHtml(att) + '</span>';
     });
     cell.innerHTML = html;
+    // Su smartphone i badge sono pallini: tocco la cella per aprire la prima attività.
+    if (attivitaGiorno.length > 0) {
+      cell.style.cursor = 'pointer';
+      cell.onclick = function() {
+        if (window.matchMedia('(max-width:575px)').matches) {
+          apriDettaglioAttivita(attivitaGiorno[0]);
+        }
+      };
+    }
     grid.appendChild(cell);
   }
   const ultimoGiornoIso = ultimoGiorno.getDay();
