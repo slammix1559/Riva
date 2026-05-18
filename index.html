@@ -78,16 +78,22 @@
 
       /* --- CALENDARIO: griglia mensile compatta a tutta larghezza --- */
       .cal-grid { gap:1px; }
-      .cal-cell { min-height:46px; padding:1px; border-radius:3px; }
+      .cal-cell { min-height:62px; padding:2px 1px; border-radius:3px; overflow:hidden; }
       .cal-cell-header { font-size:.62rem; padding:3px 0; border-radius:2px; }
-      .cal-day-num { font-size:.62rem; margin-bottom:0; }
-      /* il badge attività diventa un pallino: il testo lo si legge nel popup */
-      .cal-attivita-badge { font-size:0; padding:0; margin:1px auto;
-        width:8px; height:8px; border-radius:50%; }
+      .cal-day-num { font-size:.62rem; margin-bottom:1px; }
+      /* etichette attività in stile Google Calendar: testo piccolo, troncato */
+      .cal-attivita-badge { font-size:.5rem; line-height:1.25; padding:1px 2px;
+        margin:1px 0; border-radius:2px; }
       .cal-nav { gap:6px; margin-bottom:10px; flex-wrap:wrap; }
       .cal-nav h5 { font-size:1rem; min-width:0; flex:1 1 100%; order:-1; }
       .cal-nav button { min-width:34px; padding:.2rem .4rem; }
       .cal-nav .ms-3 { margin-left:0 !important; }
+
+      /* --- Titolo "Calendario Attività" e bottone su una riga sola --- */
+      #pane-calendario > .d-flex { flex-wrap:nowrap; gap:6px; }
+      #pane-calendario > .d-flex h4 { font-size:1.05rem; white-space:nowrap; }
+      #btn-toggle-vista { white-space:nowrap; flex:0 0 auto; padding:.25rem .5rem;
+        font-size:.78rem; }
     }
 
     /* --- Brand centrale: logo + scritta nera --- */
