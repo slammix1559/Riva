@@ -1017,14 +1017,26 @@ function caricaBiblioteca() {
   document.getElementById('lib-loader').style.display = 'block';
   document.getElementById('lib-book-list').innerHTML = '';
   
-  google.script.run.withSuccessHandler(function(data) {
-    libriGlobali = data.map(function(libro) {
-      libro.autore_completo = ((libro.nome_autore || '') + ' ' + (libro.cognome_autore || '')).trim() || libro.autore || 'N.D.';
-      return libro;
+  apiCall('getBooks', {})
+    .then(function(res) {
+      document.getElementById('lib-loader').style.display = 'none';
+      if (!res.success) {
+        document.getElementById('lib-book-list').innerHTML = 
+          '<div class="alert alert-danger">Errore: ' + (res.message || 'Impossibile caricare i libri') + '</div>';
+        return;
+      }
+      libriGlobali = (res.books || []).map(function(libro) {
+        libro.autore_completo = ((libro.nome_autore || '') + ' ' + (libro.cognome_autore || '')).trim() 
+                                || libro.autore || 'N.D.';
+        return libro;
+      });
+      renderListaLibri(libriGlobali);
+    })
+    .catch(function(err) {
+      document.getElementById('lib-loader').style.display = 'none';
+      document.getElementById('lib-book-list').innerHTML = 
+        '<div class="alert alert-danger">Errore di connessione: ' + err.message + '</div>';
     });
-    document.getElementById('lib-loader').style.display = 'none';
-    renderListaLibri(libriGlobali);
-  }).getBooks();
 }
 
 function renderListaLibri(lista) {
@@ -1114,7 +1126,16 @@ function confermaPrenotazione() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Invio...';
   
-  google.script.run.withSuccessHandler(function(res) {
+  apiCall('processBooking', {
+    nomeCognome: nome,
+    titoloLibro: libroCorrente.titolo,
+    autoreLibro: libroCorrente.autore_completo,
+    armadioLibro: libroCorrente.armadio,
+    tipoUtente: ruolo,
+    classe: classe,
+    emailRichiedente: stateUser ? stateUser.email : ''
+  })
+  .then(function(res) {
     btn.disabled = false;
     btn.innerHTML = originalText;
     if (res.success) {
@@ -1129,18 +1150,11 @@ function confermaPrenotazione() {
     } else {
       alert('❌ Errore: ' + (res.message || 'Riprova più tardi.'));
     }
-  }).withFailureHandler(function(err) {
+  })
+  .catch(function(err) {
     btn.disabled = false;
     btn.innerHTML = originalText;
     alert('❌ Errore di connessione: ' + err.message);
-  }).processBooking({
-    nomeCognome: nome,
-    titoloLibro: libroCorrente.titolo,
-    autoreLibro: libroCorrente.autore_completo,
-    armadioLibro: libroCorrente.armadio,
-    tipoUtente: ruolo,
-    classe: classe,
-    emailRichiedente: stateUser ? stateUser.email : ''
   });
 }
   
