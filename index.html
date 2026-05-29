@@ -357,8 +357,6 @@
         <p class="small-muted mb-0">Compila il modulo e invia il report di evacuazione.</p>
       </div>
     </div>
-
-    <!-- CLASSE -->
     <div class="card p-3 mb-3">
       <label class="form-label fw-bold mb-2">📋 Classe</label>
       <select id="evac-classe" class="form-select" onchange="evacCaricaStudenti()">
@@ -368,11 +366,9 @@
         <span class="spinner-border spinner-border-sm me-1"></span> Caricamento classi...
       </div>
     </div>
-
-    <!-- STUDENTI -->
     <div id="evac-studenti-card" class="card p-3 mb-3" style="display:none;">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <span class="fw-bold">👥 Studenti</span>
+        <span class="fw-bold">&#128101; Studenti</span>
         <div id="evac-stats" class="d-flex flex-wrap gap-1"></div>
       </div>
       <div class="mb-2" style="font-size:.78rem;color:#6c757d;">
@@ -382,46 +378,33 @@
       </div>
       <div id="evac-student-list"></div>
     </div>
-
-    <!-- DOCENTI PRESENTI -->
     <div class="card p-3 mb-3">
-      <label class="form-label fw-bold">🧑‍🏫 Docenti presenti <span class="text-danger">*</span></label>
+      <label class="form-label fw-bold">&#129489;&#8205;&#127979; Docenti presenti <span class="text-danger">*</span></label>
       <small class="text-muted d-block mb-2">Cognomi separati da virgola</small>
       <input type="text" id="evac-doc-presenti" class="form-control" placeholder="es. Rossi, Bianchi, Ferrari">
     </div>
-
-    <!-- DOCENTI DISPERSI -->
     <div class="card p-3 mb-3">
-      <label class="form-label fw-bold">🔴 Docenti dispersi <span class="text-muted fw-normal">(opzionale)</span></label>
+      <label class="form-label fw-bold">Docenti dispersi <span class="text-muted fw-normal">(opzionale)</span></label>
       <input type="text" id="evac-doc-dispersi" class="form-control" placeholder="es. Colombo">
     </div>
-
-    <!-- DOCENTI FERITI -->
     <div class="card p-3 mb-3">
-      <label class="form-label fw-bold">🩹 Docenti feriti <span class="text-muted fw-normal">(opzionale)</span></label>
+      <label class="form-label fw-bold">Docenti feriti <span class="text-muted fw-normal">(opzionale)</span></label>
       <input type="text" id="evac-doc-feriti" class="form-control" placeholder="es. Verdi">
     </div>
-
-    <!-- PUNTO DI RACCOLTA -->
     <div class="card p-3 mb-3">
-      <label class="form-label fw-bold mb-2">📍 Punto di raccolta <span class="text-danger">*</span></label>
+      <label class="form-label fw-bold mb-2">Punto di raccolta <span class="text-danger">*</span></label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <button type="button" class="btn btn-outline-secondary evac-pdr-btn" onclick="evacSelPDR(this,'Cortile bienni')">🏫 Cortile bienni</button>
-        <button type="button" class="btn btn-outline-secondary evac-pdr-btn" onclick="evacSelPDR(this,'Cortile triennio')">🏫 Cortile triennio</button>
-        <button type="button" class="btn btn-outline-secondary evac-pdr-btn" onclick="evacSelPDR(this,'Retro galleria')">🏛️ Retro galleria</button>
-        <button type="button" class="btn btn-outline-secondary evac-pdr-btn" onclick="evacSelPDR(this,'Ingresso principale')">🚪 Ingresso principale</button>
+        <button type="button" class="btn btn-outline-secondary evac-pdr-btn" onclick="evacSelPDR(this,'Cortile bienni')">Cortile bienni</button>
+        <button type="button" class="btn btn-outline-secondary evac-pdr-btn" onclick="evacSelPDR(this,'Cortile triennio')">Cortile triennio</button>
+        <button type="button" class="btn btn-outline-secondary evac-pdr-btn" onclick="evacSelPDR(this,'Retro galleria')">Retro galleria</button>
+        <button type="button" class="btn btn-outline-secondary evac-pdr-btn" onclick="evacSelPDR(this,'Ingresso principale')">Ingresso principale</button>
       </div>
     </div>
-
-    <!-- SUBMIT -->
-    <button id="evac-submit-btn" type="button" class="btn btn-danger w-100 py-3 fw-bold fs-5" onclick="evacInviaReport()">
-      📤 Invia Report Evacuazione
-    </button>
+    <button id="evac-submit-btn" type="button" class="btn btn-danger w-100 py-3 fw-bold fs-5" onclick="evacInviaReport()">Invia Report Evacuazione</button>
     <div id="evac-loader" class="text-center mt-2 hide">
       <span class="spinner-border text-danger spinner-border-sm"></span> Invio in corso...
     </div>
   </div>
-
 
   <div id="loader-dash" class="text-center mt-4 hide">
     <div class="spinner-border text-primary"></div>
@@ -657,6 +640,7 @@ function caricaDashboard() {
         document.getElementById('tab-cal-li').classList.remove('hide');
         document.getElementById('tab-orario-li').classList.remove('hide');
         document.getElementById('tab-scrutini-li').classList.remove('hide');
+        document.getElementById('tab-evac-li').classList.remove('hide');
         switchTab('segr');
         renderSegreteria(res.segreteria);
         return;
@@ -668,12 +652,12 @@ function caricaDashboard() {
       show('tab-cal-li');
       show('tab-orario-li');
       show('tab-scrutini-li');
+      document.getElementById('tab-evac-li').classList.remove('hide');
       switchTab('cdc');
     })
     .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
-  // Mostra il tab Biblioteca e Evacuazione a tutti
+  // Mostra il tab Biblioteca a tutti
   document.getElementById('tab-biblioteca-li').classList.remove('hide');
-  document.getElementById('tab-evac-li').classList.remove('hide');
 }
 
 function switchTab(t) {
@@ -1260,16 +1244,16 @@ function confermaPrenotazione() {
   
 // ======================= EVACUAZIONE =======================
 
-const EVAC_STUDENTI = {};
-let evacStatiStudenti = {};
-let evacPuntoRaccolta = "";
-let evacInited = false;
+var EVAC_STUDENTI = {};
+var evacStatiStudenti = {};
+var evacPuntoRaccolta = '';
+var evacInited = false;
 
 function evacInit() {
   if (evacInited) return;
   evacInited = true;
-  const sel = document.getElementById('evac-classe');
-  const loader = document.getElementById('evac-classe-loader');
+  var sel    = document.getElementById('evac-classe');
+  var loader = document.getElementById('evac-classe-loader');
   if (sel.options.length > 1) return;
 
   loader.classList.remove('hide');
@@ -1279,41 +1263,40 @@ function evacInit() {
     .then(function(res) {
       loader.classList.add('hide');
       sel.disabled = false;
-      if (!res.success) {
-        alert('Errore caricamento alunni: ' + (res.message || 'errore sconosciuto'));
+      if (!res || !res.success) {
+        alert('Errore caricamento alunni: ' + (res ? res.message : 'nessuna risposta'));
         return;
       }
-      Object.assign(EVAC_STUDENTI, res.alunni);
-      Object.keys(res.alunni).sort().forEach(function(cls) {
-        const opt = document.createElement('option');
+      var alunni = res.alunni || {};
+      var classi = Object.keys(alunni).sort();
+      classi.forEach(function(cls) {
+        EVAC_STUDENTI[cls] = alunni[cls];
+        var opt = document.createElement('option');
         opt.value = cls;
-        const parts = res.alunni[cls].label.split(' ');
-        opt.textContent = cls + ' — ' + (parts.length > 1 ? parts.slice(1).join(' ') : res.alunni[cls].label);
+        var parts = alunni[cls].label.split(' ');
+        opt.textContent = cls + ' - ' + (parts.length > 1 ? parts.slice(1).join(' ') : alunni[cls].label);
         sel.appendChild(opt);
       });
     })
     .catch(function(err) {
       loader.classList.add('hide');
       sel.disabled = false;
-      alert('Errore connessione caricamento alunni: ' + err.message);
+      alert('Errore connessione alunni: ' + err.message);
     });
 }
 
 function evacCaricaStudenti() {
-  const cls = document.getElementById('evac-classe').value;
-  const card = document.getElementById('evac-studenti-card');
-  const list = document.getElementById('evac-student-list');
+  var cls  = document.getElementById('evac-classe').value;
+  var card = document.getElementById('evac-studenti-card');
+  var list = document.getElementById('evac-student-list');
   evacStatiStudenti = {};
-
   if (!cls) { card.style.display = 'none'; list.innerHTML = ''; return; }
-
   card.style.display = 'block';
-  const studenti = EVAC_STUDENTI[cls].students;
+  var studenti = EVAC_STUDENTI[cls].students;
   list.innerHTML = '';
-
   studenti.forEach(function(s, i) {
     evacStatiStudenti[i] = null;
-    const row = document.createElement('div');
+    var row = document.createElement('div');
     row.className = 'evac-student-row';
     row.id = 'evac-row-' + i;
     row.innerHTML =
@@ -1322,9 +1305,9 @@ function evacCaricaStudenti() {
         '<small>' + escapeHtml(s.nome) + '</small>' +
       '</div>' +
       '<div class="evac-btn-group">' +
-        '<button type="button" class="evac-stato-btn" title="Assente"  onclick="evacToggle(' + i + ','A')">A</button>' +
-        '<button type="button" class="evac-stato-btn" title="Ferito"   onclick="evacToggle(' + i + ','F')">F</button>' +
-        '<button type="button" class="evac-stato-btn" title="Disperso" onclick="evacToggle(' + i + ','D')">D</button>' +
+        '<button type="button" class="evac-stato-btn" onclick="evacToggle(' + i + ',\'A\')">A</button>' +
+        '<button type="button" class="evac-stato-btn" onclick="evacToggle(' + i + ',\'F\')">F</button>' +
+        '<button type="button" class="evac-stato-btn" onclick="evacToggle(' + i + ',\'D\')">D</button>' +
       '</div>';
     list.appendChild(row);
   });
@@ -1332,11 +1315,11 @@ function evacCaricaStudenti() {
 }
 
 function evacToggle(idx, stato) {
-  const prev = evacStatiStudenti[idx];
+  var prev = evacStatiStudenti[idx];
   evacStatiStudenti[idx] = (prev === stato) ? null : stato;
-  const row = document.getElementById('evac-row-' + idx);
+  var row  = document.getElementById('evac-row-' + idx);
   row.className = 'evac-student-row' + (evacStatiStudenti[idx] ? ' evac-row-' + evacStatiStudenti[idx] : '');
-  const btns = row.querySelectorAll('.evac-stato-btn');
+  var btns = row.querySelectorAll('.evac-stato-btn');
   btns.forEach(function(b) { b.className = 'evac-stato-btn'; });
   if (evacStatiStudenti[idx]) {
     var map = {A:0, F:1, D:2};
@@ -1346,26 +1329,24 @@ function evacToggle(idx, stato) {
 }
 
 function evacAggiornaStats() {
-  const cls = document.getElementById('evac-classe').value;
-  if (!cls) return;
-  const tot  = EVAC_STUDENTI[cls].students.length;
-  const vals = Object.values(evacStatiStudenti);
-  const nA   = vals.filter(function(v){return v==='A';}).length;
-  const nF   = vals.filter(function(v){return v==='F';}).length;
-  const nD   = vals.filter(function(v){return v==='D';}).length;
-  const nOK  = tot - nA - nF - nD;
+  var cls = document.getElementById('evac-classe').value;
+  if (!cls || !EVAC_STUDENTI[cls]) return;
+  var tot  = EVAC_STUDENTI[cls].students.length;
+  var vals = Object.values(evacStatiStudenti);
+  var nA   = vals.filter(function(v){return v==='A';}).length;
+  var nF   = vals.filter(function(v){return v==='F';}).length;
+  var nD   = vals.filter(function(v){return v==='D';}).length;
+  var nOK  = tot - nA - nF - nD;
   document.getElementById('evac-stats').innerHTML =
-    '<span class="badge bg-primary">'   + tot + ' tot.</span> ' +
-    '<span class="badge bg-success">'   + nOK + ' pres.</span>' +
-    (nA ? ' <span class="badge bg-secondary">'        + nA + ' ass.</span>'  : '') +
-    (nF ? ' <span class="badge bg-warning text-dark">' + nF + ' fer.</span>'  : '') +
-    (nD ? ' <span class="badge bg-danger">'            + nD + ' disp.</span>' : '');
+    '<span class="badge bg-primary">' + tot + ' tot.</span> ' +
+    '<span class="badge bg-success">' + nOK + ' pres.</span>' +
+    (nA ? ' <span class="badge bg-secondary">' + nA + ' ass.</span>' : '') +
+    (nF ? ' <span class="badge bg-warning text-dark">' + nF + ' fer.</span>' : '') +
+    (nD ? ' <span class="badge bg-danger">' + nD + ' disp.</span>' : '');
 }
 
 function evacSelPDR(btn, valore) {
-  document.querySelectorAll('.evac-pdr-btn').forEach(function(b) {
-    b.classList.remove('active');
-  });
+  document.querySelectorAll('.evac-pdr-btn').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
   evacPuntoRaccolta = valore;
 }
@@ -1382,7 +1363,6 @@ function evacInviaReport() {
   var docPres = (document.getElementById('evac-doc-presenti').value || '').trim();
   var docDisp = (document.getElementById('evac-doc-dispersi').value || '').trim();
   var docFer  = (document.getElementById('evac-doc-feriti').value   || '').trim();
-
   if (!cls)               { alert('Seleziona prima la classe.'); return; }
   if (!docPres)           { alert('Indica almeno un docente presente.'); return; }
   if (!evacPuntoRaccolta) { alert('Seleziona il punto di raccolta.'); return; }
@@ -1390,7 +1370,6 @@ function evacInviaReport() {
   var studenti = EVAC_STUDENTI[cls].students;
   var tot      = studenti.length;
   var evacuati = [], feriti = [], dispersi = [];
-
   studenti.forEach(function(s, i) {
     var st   = evacStatiStudenti[i];
     var nome = s.cognome + ' ' + s.nome;
@@ -1398,62 +1377,51 @@ function evacInviaReport() {
     else if (st === 'D') { dispersi.push(nome); }
     else if (st !== 'A') { evacuati.push(nome); }
   });
-
   var nAssenti = Object.values(evacStatiStudenti).filter(function(v){return v==='A';}).length;
   var oraEvac  = evacDataOra();
   var clsLabel = EVAC_STUDENTI[cls].label;
-
-  var testo  = '⚠️ REPORT EVACUAZIONE — ITIS G. RIVA\n';
-  testo += '═══════════════════════════════════\n\n';
-  testo += '📅 Data e ora: ' + oraEvac + '\n';
-  testo += '📚 Classe: ' + cls + ' — ' + clsLabel + '\n';
-  testo += '📍 Punto di raccolta: ' + evacPuntoRaccolta + '\n\n';
-  testo += '═══ STUDENTI ═══\n';
-  testo += '👥 Totale classe: ' + tot + '\n';
-  testo += '✅ Evacuati (presenti + feriti): ' + evacuati.length + '\n';
-  testo += '⬜ Assenti (pre-emergenza): ' + nAssenti + '\n';
-  testo += '🩹 Feriti: ' + feriti.length + '\n';
-  testo += '🔴 Dispersi: ' + dispersi.length + '\n\n';
-  if (evacuati.length) { testo += 'Evacuati:\n';  evacuati.forEach(function(n){testo+='  • '+n+'\n';}); testo+='\n'; }
-  if (feriti.length)   { testo += 'Feriti:\n';    feriti.forEach(function(n){testo+='  ⚠ '+n+'\n';}); testo+='\n'; }
-  if (dispersi.length) { testo += 'Dispersi:\n';  dispersi.forEach(function(n){testo+='  🚨 '+n+'\n';}); testo+='\n'; }
-  testo += '═══ DOCENTI ═══\n';
-  testo += '✅ Presenti: ' + docPres + '\n';
-  if (docDisp) testo += '🔴 Dispersi: ' + docDisp + '\n';
-  if (docFer)  testo += '🩹 Feriti: '   + docFer   + '\n';
+  var testo    = 'REPORT EVACUAZIONE - ITIS G. RIVA\n';
+  testo += 'Data e ora: ' + oraEvac + '\n';
+  testo += 'Classe: ' + cls + ' - ' + clsLabel + '\n';
+  testo += 'Punto di raccolta: ' + evacPuntoRaccolta + '\n\n';
+  testo += 'STUDENTI\n';
+  testo += 'Totale: ' + tot + '\n';
+  testo += 'Evacuati (presenti+feriti): ' + evacuati.length + '\n';
+  testo += 'Assenti (pre-emergenza): ' + nAssenti + '\n';
+  testo += 'Feriti: ' + feriti.length + '\n';
+  testo += 'Dispersi: ' + dispersi.length + '\n\n';
+  if (evacuati.length)  { testo += 'Evacuati:\n';  evacuati.forEach(function(n){testo+='  - '+n+'\n';});  testo+='\n'; }
+  if (feriti.length)    { testo += 'Feriti:\n';    feriti.forEach(function(n){testo+='  - '+n+'\n';});    testo+='\n'; }
+  if (dispersi.length)  { testo += 'Dispersi:\n';  dispersi.forEach(function(n){testo+='  - '+n+'\n';}); testo+='\n'; }
+  testo += 'DOCENTI\n';
+  testo += 'Presenti: ' + docPres + '\n';
+  if (docDisp) testo += 'Dispersi: ' + docDisp + '\n';
+  if (docFer)  testo += 'Feriti: '   + docFer   + '\n';
 
   var btn = document.getElementById('evac-submit-btn');
   btn.disabled = true;
   document.getElementById('evac-loader').classList.remove('hide');
-
   apiCall('reportEvacuazione', {
-    classe: cls,
-    classeLabel: clsLabel,
-    oraEvacuazione: oraEvac,
+    classe: cls, classeLabel: clsLabel, oraEvacuazione: oraEvac,
     puntoRaccolta: evacPuntoRaccolta,
-    studentiEvacuati: evacuati,
-    studentiFeriti: feriti,
-    studentiDispersi: dispersi,
-    nAssenti: nAssenti,
-    docentiPresenti: docPres,
-    docentiDispersi: docDisp,
-    docentiFeriti: docFer,
-    testoCompleto: testo
+    studentiEvacuati: evacuati, studentiFeriti: feriti, studentiDispersi: dispersi,
+    nAssenti: nAssenti, docentiPresenti: docPres,
+    docentiDispersi: docDisp, docentiFeriti: docFer, testoCompleto: testo
   })
   .then(function(res) {
     btn.disabled = false;
     document.getElementById('evac-loader').classList.add('hide');
-    if (res.success) {
-      alert('✅ Report inviato!\n\nEmail inviata a daniele.brancati@itisriva.edu.it');
+    if (res && res.success) {
+      alert('Report inviato!\nEmail inviata a daniele.brancati@itisriva.edu.it');
       evacResetForm();
     } else {
-      alert('❌ Errore: ' + (res.message || 'Riprova più tardi.'));
+      alert('Errore: ' + (res ? res.message : 'Riprova piu\' tardi.'));
     }
   })
   .catch(function(err) {
     btn.disabled = false;
     document.getElementById('evac-loader').classList.add('hide');
-    alert('❌ Errore di connessione: ' + err.message);
+    alert('Errore di connessione: ' + err.message);
   });
 }
 
@@ -1464,12 +1432,12 @@ function evacResetForm() {
   document.getElementById('evac-doc-presenti').value = '';
   document.getElementById('evac-doc-dispersi').value = '';
   document.getElementById('evac-doc-feriti').value = '';
-  document.querySelectorAll('.evac-pdr-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.evac-pdr-btn').forEach(function(b){b.classList.remove('active');});
   evacStatiStudenti = {};
   evacPuntoRaccolta = '';
 }
-
 // ======================= /EVACUAZIONE =======================
+
 
 document.addEventListener('DOMContentLoaded', function() {
   ['login-email','login-pwd'].forEach(function(id) {
