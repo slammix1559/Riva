@@ -376,7 +376,7 @@
     <div class="card p-3 mb-3">
       <label class="form-label fw-bold mb-2">Punto di raccolta <span class="text-danger">*</span></label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <button type="button" class="btn btn-outline-secondary" id="pdr-cb" onclick="evacSelPDR(this,0)">Cortile bienni</button>
+        <button type="button" class="btn btn-outline-secondary" id="pdr-cb" onclick="evacSelPDR(this,0)">Cortile biennio</button>
         <button type="button" class="btn btn-outline-secondary" id="pdr-ct" onclick="evacSelPDR(this,1)">Cortile triennio</button>
         <button type="button" class="btn btn-outline-secondary" id="pdr-rg" onclick="evacSelPDR(this,2)">Retro galleria</button>
         <button type="button" class="btn btn-outline-secondary" id="pdr-ip" onclick="evacSelPDR(this,3)">Ingresso principale</button>
@@ -1229,7 +1229,7 @@ var EVAC_DB = {};
 var evacStati = {};
 var evacPDR = "";
 var evacReady = false;
-var PDR_LABELS = ["Cortile bienni","Cortile triennio","Retro galleria","Ingresso principale"];
+var PDR_LABELS = ["Cortile biennio","Cortile triennio","Retro galleria","Ingresso principale"];
 
 function evacInit() {
   if (evacReady) return;
