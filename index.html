@@ -23,7 +23,6 @@
     .card { border-radius:1rem; border:none; box-shadow:0 4px 14px rgba(0,0,0,.06); }
     .login-wrap { min-height:90vh; display:flex; align-items:center; }
     .badge-counter { font-size:1rem; padding:.5rem .8rem; }
-    /* Etichette doppie nei badge contatori: corta su mobile, lunga su desktop */
     .lbl-short { display:none; }
     .lbl-full { display:inline; }
     .counter-red { color:#dc3545 !important; font-weight:700; }
@@ -54,88 +53,67 @@
     .elenco-attivita-item { cursor:pointer; padding:8px 12px; border-radius:6px; margin:2px 0; transition:background .15s; }
     .elenco-attivita-item:hover { background:#e9ecef; }
     .elenco-attivita-item .badge { float:right; }
+
+    /* ── ORARIO ── */
     .tbl-orario { font-size:.85rem; }
     .tbl-orario th { background:#0d6efd; color:#fff; text-align:center; vertical-align:middle; }
     .tbl-orario td { vertical-align:middle; text-align:center; min-width:100px; }
     .tbl-orario td.ora-label { background:#e9ecef; font-weight:700; }
     .tbl-orario td.bg-ora { background:#dbeafe; }
+    .tbl-orario td.bg-ora .materia-badge {
+      display:inline-block; font-size:.68rem; background:#0d6efd; color:#fff;
+      border-radius:3px; padding:0 4px; margin-bottom:2px; }
+    .tbl-orario td.bg-ora .compresenti-txt { font-size:.65rem; color:#495057; }
+    /* Ricerca docente orario */
+    #orario-search-box { position:relative; }
+    #orario-docenti-suggerimenti { position:absolute; z-index:100; background:#fff;
+      border:1px solid #dee2e6; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,.1);
+      width:100%; max-height:200px; overflow-y:auto; }
+    #orario-docenti-suggerimenti .sugg-item { padding:8px 12px; cursor:pointer; font-size:.9rem; }
+    #orario-docenti-suggerimenti .sugg-item:hover { background:#f0f7ff; }
 
-    /* --- Banner "Installa App" (PWA) --- */
-    #install-banner { position:fixed; left:16px; right:16px; bottom:16px; z-index:1500;
-      display:none; align-items:center; gap:12px; padding:12px 16px;
-      background:#0d6efd; color:#fff; border-radius:14px;
-      box-shadow:0 8px 24px rgba(13,110,253,.35);
-      font-size:.95rem; }
-    #install-banner .ib-icon { font-size:1.6rem; line-height:1; }
-    #install-banner .ib-text { flex:1; line-height:1.25; }
-    #install-banner .ib-text small { display:block; opacity:.85; font-size:.78rem; margin-top:2px; }
-    #install-banner button { border:none; border-radius:8px; padding:.5rem .9rem;
-      font-weight:600; font-size:.88rem; cursor:pointer; }
-    #install-banner .btn-install-yes { background:#fff; color:#0d6efd; }
-    #install-banner .btn-install-no { background:transparent; color:#fff;
-      padding:.5rem .6rem; font-size:1.1rem; }
-    @media (min-width:768px) {
-      #install-banner { left:auto; right:24px; bottom:24px; max-width:420px; }
-    }
-
-    /* --- Loader full-page: copre tutto lo schermo, blocca i click --- */
-    #loader-dash { position:fixed; inset:0; z-index:2000;
-      background:rgba(255,255,255,.75); backdrop-filter:blur(2px);
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:14px; }
-    #loader-dash .spinner-border { width:3rem; height:3rem; border-width:.35em; }
-    #loader-dash .loader-text { font-weight:600; color:#0d6efd; font-size:1rem; }
-
-    /* --- Toast container in alto a destra --- */
-    .toast-container-fixed { position:fixed; top:80px; right:16px; z-index:2100;
-      max-width:360px; }
+    /* ── SMARTPHONE ── */
     @media (max-width:575px) {
-      .toast-container-fixed { top:auto; bottom:16px; right:8px; left:8px; max-width:none; }
-    }
-
-    /* ===================================================================
-       VISTA SMARTPHONE — griglie compatte che entrano nello schermo
-       (max-width:575px = solo telefoni; tablet e desktop NON toccati)
-       =================================================================== */
-    @media (max-width:575px) {
-
-      /* --- ORARIO: griglia compatta a tutta larghezza, niente scroll --- */
       #orario-container { overflow-x:hidden; }
-      .tbl-orario { width:100%; table-layout:fixed; font-size:.6rem;
+      .tbl-orario { width:100%; table-layout:fixed; font-size:.52rem;
         border-collapse:collapse; margin-bottom:0; }
       .tbl-orario th, .tbl-orario td { padding:2px 1px !important;
         min-width:0 !important; word-break:break-word; line-height:1.15; }
-      .tbl-orario th { font-size:.6rem; }
-      /* prima colonna "Ora" stretta, le altre 5 si dividono lo spazio */
-      .tbl-orario th:first-child, .tbl-orario td.ora-label { width:9%; }
-      .tbl-orario th:not(:first-child), .tbl-orario td:not(.ora-label) { width:18.2%; }
-      .tbl-orario td strong { font-size:.62rem; }
-      .tbl-orario td small { font-size:.52rem; display:block; line-height:1.1; }
+      .tbl-orario th { font-size:.52rem; }
+      .tbl-orario th:first-child, .tbl-orario td.ora-label { width:8%; }
+      .tbl-orario th:not(:first-child), .tbl-orario td:not(.ora-label) { width:18.4%; }
+      .tbl-orario td strong { font-size:.55rem; }
+      .tbl-orario td small { font-size:.48rem; display:block; line-height:1.1; }
+      .tbl-orario td.bg-ora .materia-badge { font-size:.46rem; padding:0 2px; }
+      .tbl-orario td.bg-ora .compresenti-txt { font-size:.42rem; }
 
-      /* --- CALENDARIO: griglia mensile compatta a tutta larghezza --- */
       .cal-grid { gap:1px; }
       .cal-cell { min-height:62px; padding:2px 1px; border-radius:3px; overflow:hidden; }
       .cal-cell-header { font-size:.62rem; padding:3px 0; border-radius:2px; }
       .cal-day-num { font-size:.62rem; margin-bottom:1px; }
-      /* etichette attività in stile Google Calendar: testo piccolo, troncato */
-      .cal-attivita-badge { font-size:.5rem; line-height:1.25; padding:1px 2px;
-        margin:1px 0; border-radius:2px; }
+      .cal-attivita-badge { font-size:.5rem; line-height:1.25; padding:1px 2px; margin:1px 0; border-radius:2px; }
       .cal-nav { gap:6px; margin-bottom:10px; flex-wrap:wrap; }
       .cal-nav h5 { font-size:1rem; min-width:0; flex:1 1 100%; order:-1; }
       .cal-nav button { min-width:34px; padding:.2rem .4rem; }
       .cal-nav .ms-3 { margin-left:0 !important; }
-
-      /* --- Titolo "Calendario Attività" e bottone su una riga sola --- */
       #pane-calendario > .d-flex { flex-wrap:nowrap; gap:6px; }
       #pane-calendario > .d-flex h4 { font-size:1.05rem; white-space:nowrap; }
-      #btn-toggle-vista { white-space:nowrap; flex:0 0 auto; padding:.25rem .5rem;
-        font-size:.78rem; }
+      #btn-toggle-vista { white-space:nowrap; flex:0 0 auto; padding:.25rem .5rem; font-size:.78rem; }
+      #lib-search-input { width: 140px !important; font-size: 0.75rem; }
+      #lib-book-list .list-group-item { font-size: 0.8rem; padding: 0.6rem 0.75rem; }
+      #lib-book-list small { font-size: 0.65rem; }
+      #lib-full-specs table { font-size: 0.7rem; }
+      #lib-full-specs th, #lib-full-specs td { padding: 4px 6px; }
 
-      /* --- Badge contatori CdC (Pianificate / Soglia / Tue ore) su una riga --- */
+      /* Orario: search box full width */
+      #orario-search-wrap { flex-direction:column !important; gap:6px; }
+      #orario-docente-input { font-size:.8rem; }
+
+      /* ── Badge contatori CdC su una riga sola con label corte ── */
       #pane-cdc > .d-flex { flex-wrap:nowrap; gap:6px; align-items:center; }
       #pane-cdc > .d-flex > h4 { font-size:1.05rem; white-space:nowrap;
         flex:0 1 auto; min-width:0; }
-      #pane-cdc > .d-flex > .d-flex { flex:1 1 auto; flex-wrap:nowrap;
+      #pane-cdc > .d-flex > .d-flex { flex:1 1 auto; flex-wrap:nowrap !important;
         justify-content:flex-end; gap:4px !important; min-width:0; }
       #pane-cdc .badge-counter { font-size:.7rem; padding:.3rem .45rem;
         white-space:nowrap; }
@@ -143,28 +121,59 @@
       #pane-cdc .lbl-short { display:inline; }
     }
 
-    /* --- Brand centrale: logo + scritta nera --- */
+    /* ── NAVBAR / BRAND ── */
     .navbar-inner { display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
       gap:8px 12px; width:100%; padding:8px 0; }
     .brand-center { display:flex; flex-direction:column; align-items:center; justify-content:center;
       line-height:1.1; flex:1 1 100%; order:1; }
     .brand-center img { height:60px; width:auto; display:block; }
     .brand-center .brand-text { color:#000; font-weight:700; font-size:1rem; margin-top:2px; text-align:center; }
-    /* --- Brand nella card di login: logo + scritta ordinati SOPRA il form --- */
     .brand-login { display:flex; flex-direction:column; align-items:center;
       justify-content:center; text-align:center; margin-bottom:1.25rem; }
     .brand-login img { height:72px; width:auto; display:block; }
-    .brand-login .brand-text { color:#000; font-weight:700; font-size:1.05rem;
-      margin-top:8px; line-height:1.2; }
+    .brand-login .brand-text { color:#000; font-weight:700; font-size:1.05rem; margin-top:8px; line-height:1.2; }
     .navbar-user { order:2; flex:1 1 100%; text-align:center; }
     .navbar-actions { order:3; flex:1 1 100%; display:flex; justify-content:center; gap:8px; }
-    /* Su schermi larghi: tutto su una riga, logo centrato, azioni a destra */
     @media (min-width:768px) {
       .navbar-inner { flex-wrap:nowrap; justify-content:flex-start; position:relative; min-height:64px; }
       .brand-center { flex:0 0 auto; order:2; position:absolute; left:50%; transform:translateX(-50%); }
       .navbar-user { order:1; flex:0 1 auto; text-align:left; }
       .navbar-actions { order:3; flex:0 0 auto; margin-left:auto; }
     }
+
+    /* ── NAVIGAZIONE PROFESSIONALE (tabs principali) ── */
+    .main-nav { background:#fff; border-radius:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,.04); padding:6px;
+      display:flex; flex-wrap:wrap; gap:4px; margin-bottom:1.25rem;
+      border:1px solid #e9ecef; }
+    .main-nav .nav-link { color:#495057; font-weight:500; font-size:.92rem;
+      padding:.55rem .95rem; border-radius:8px; border:none;
+      transition:all .15s ease; white-space:nowrap; display:inline-flex;
+      align-items:center; gap:6px; cursor:pointer; text-decoration:none; }
+    .main-nav .nav-link:hover { background:#f0f7ff; color:#0d6efd; }
+    .main-nav .nav-link.active { background:#0d6efd; color:#fff;
+      box-shadow:0 2px 6px rgba(13,110,253,.3); }
+    .main-nav .nav-link .nav-emoji { font-size:1rem; line-height:1; }
+    @media (max-width:575px) {
+      .main-nav { gap:3px; padding:4px; border-radius:10px;
+        overflow-x:auto; flex-wrap:nowrap; scrollbar-width:thin; }
+      .main-nav::-webkit-scrollbar { height:3px; }
+      .main-nav::-webkit-scrollbar-thumb { background:#dee2e6; border-radius:2px; }
+      .main-nav .nav-link { font-size:.78rem; padding:.45rem .65rem;
+        border-radius:6px; flex-shrink:0; }
+      .main-nav .nav-link .nav-emoji { font-size:.92rem; }
+    }
+    .evac-row{display:flex;align-items:center;gap:6px;padding:6px 2px;border-bottom:1px solid #f0f0f0;}
+    .evac-row:last-child{border-bottom:none;}
+    .evac-name{flex:1;font-size:.88rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .evac-name small{display:block;font-size:.72rem;color:#6c757d;}
+    .evac-btns{display:flex;gap:3px;flex-shrink:0;}
+    .evac-btn{width:34px;height:34px;border-radius:6px;border:2px solid #dee2e6;background:#fff;
+      font-weight:700;font-size:.82rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+    .evac-btn.on-A{background:#6c757d;border-color:#495057;color:#fff;}
+    .evac-btn.on-F{background:#fd7e14;border-color:#e76e00;color:#fff;}
+    .evac-btn.on-D{background:#dc3545;border-color:#b02a37;color:#fff;}
+    .evac-pdr-on{background:#dc3545!important;border-color:#dc3545!important;color:#fff!important;}
   </style>
 </head>
 <body>
@@ -185,6 +194,7 @@
   </div>
 </nav>
 
+<!-- ══════════════════ LOGIN ══════════════════ -->
 <div id="view-login" class="container login-wrap">
   <div class="card p-4 mx-auto" style="max-width:420px; width:100%;">
     <div class="brand-login">
@@ -236,16 +246,36 @@
   </div>
 </div>
 
+<!-- ══════════════════ DASHBOARD ══════════════════ -->
 <div id="view-dashboard" class="container my-4 hide">
-  <ul class="nav nav-tabs mb-3" id="tabs">
-    <li class="nav-item"><a class="nav-link active" id="tab-cdc" href="#" onclick="switchTab('cdc');return false;">I miei CdC</a></li>
-    <li class="nav-item hide" id="tab-coord-li"><a class="nav-link" id="tab-coord" href="#" onclick="switchTab('coord');return false;">CdC coordinati</a></li>
-    <li class="nav-item hide" id="tab-cal-li"><a class="nav-link" id="tab-cal" href="#" onclick="switchTab('calendario');return false;">📅 Attività</a></li>
-    <li class="nav-item hide" id="tab-orario-li"><a class="nav-link" id="tab-orario" href="#" onclick="switchTab('orario');return false;">🕐 Orario</a></li>
-    <li class="nav-item hide" id="tab-scrutini-li"><a class="nav-link" id="tab-scrutini" href="#" onclick="switchTab('scrutini');return false;">📊 Scrutini</a></li>
-    <li class="nav-item hide" id="tab-segr-li"><a class="nav-link" id="tab-segr" href="#" onclick="switchTab('segr');return false;">Vista segreteria</a></li>
-  </ul>
+  <nav class="main-nav" id="tabs" role="tablist">
+    <a class="nav-link active" id="tab-cdc" href="#" onclick="switchTab('cdc');return false;" role="tab">
+      <span class="nav-emoji">📋</span> I miei CdC
+    </a>
+    <a class="nav-link hide" id="tab-coord" href="#" onclick="switchTab('coord');return false;" role="tab">
+      <span class="nav-emoji">👥</span> CdC coordinati
+    </a>
+    <a class="nav-link hide" id="tab-cal" href="#" onclick="switchTab('calendario');return false;" role="tab">
+      <span class="nav-emoji">📅</span> Attività
+    </a>
+    <a class="nav-link hide" id="tab-orario" href="#" onclick="switchTab('orario');return false;" role="tab">
+      <span class="nav-emoji">🕐</span> Orario
+    </a>
+    <a class="nav-link hide" id="tab-scrutini" href="#" onclick="switchTab('scrutini');return false;" role="tab">
+      <span class="nav-emoji">📊</span> Scrutini
+    </a>
+    <a class="nav-link hide" id="tab-segr" href="#" onclick="switchTab('segr');return false;" role="tab">
+      <span class="nav-emoji">🗂️</span> Segreteria
+    </a>
+    <a class="nav-link hide" id="tab-biblioteca" href="#" onclick="switchTab('biblioteca');return false;" role="tab">
+      <span class="nav-emoji">📚</span> Biblioteca
+    </a>
+    <a class="nav-link hide" id="tab-evac" href="#" onclick="switchTab('evac');return false;" role="tab">
+      <span class="nav-emoji">🚨</span> Evacuazione
+    </a>
+  </nav>
 
+  <!-- ── I MIEI CDC ── -->
   <div id="pane-cdc">
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
       <h4 class="mb-0">I tuoi Consigli di Classe</h4>
@@ -259,6 +289,7 @@
     <div id="cdc-empty" class="alert alert-light text-center hide mt-3">Nessun CdC trovato per le tue classi.</div>
   </div>
 
+  <!-- ── CDC COORDINATI ── -->
   <div id="pane-coord" class="hide">
     <h4>CdC delle classi che coordini</h4>
     <p class="small-muted">Clicca su un CdC per vedere i docenti e gestire le presenze.</p>
@@ -272,6 +303,7 @@
     </div>
   </div>
 
+  <!-- ── VISTA SEGRETERIA ── -->
   <div id="pane-segr" class="hide">
     <h4>Riepilogo ore CdC - tutti i docenti</h4>
     <div id="segr-ricap" class="mb-3 d-flex flex-wrap gap-2"></div>
@@ -286,6 +318,7 @@
     </div>
   </div>
 
+  <!-- ── CALENDARIO ATTIVITÀ ── -->
   <div id="pane-calendario" class="hide">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h4 class="mb-0">📅 Calendario Attività</h4>
@@ -308,38 +341,137 @@
     </div>
   </div>
 
+  <!-- ── ORARIO ── -->
   <div id="pane-orario" class="hide">
-    <h4>🕐 Il mio Orario</h4>
-    <p class="small-muted" id="orario-nome-docente"></p>
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+      <h4 class="mb-0">🕐 Orario</h4>
+    </div>
+    <!-- Ricerca docente (solo segreteria) -->
+    <div id="orario-search-wrap" class="d-flex align-items-center gap-2 mb-3 hide" style="position:relative;">
+      <div id="orario-search-box" class="flex-grow-1" style="position:relative;">
+        <input type="text" id="orario-docente-input" class="form-control"
+               placeholder="🔍 Cerca docente per nome o cognome..."
+               oninput="filtraDocentiOrario()" autocomplete="off">
+        <div id="orario-docenti-suggerimenti"></div>
+      </div>
+      <button class="btn btn-outline-secondary btn-sm" onclick="resetRicercaDocente()" title="Il mio orario">
+        ✕
+      </button>
+    </div>
+    <p class="small-muted mb-1" id="orario-nome-docente"></p>
     <div id="orario-container" class="table-responsive"></div>
+    <div id="orario-loader" class="text-center py-3 hide">
+      <div class="spinner-border text-primary spinner-border-sm"></div> Caricamento...
+    </div>
   </div>
-  
-<div id="pane-scrutini" class="hide">
+
+  <!-- ── SCRUTINI ── -->
+  <div id="pane-scrutini" class="hide">
     <h4>📊 I miei Scrutini</h4>
     <p class="small-muted">Scrutini delle classi in cui insegni. Sola consultazione.</p>
     <div id="scrutini-container"></div>
   </div>
-  
-  <div id="loader-dash" class="hide">
+
+  <!-- ── BIBLIOTECA ── -->
+  <div id="pane-biblioteca" class="hide">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <h4 class="mb-0">📚 Biblioteca ITIS Riva</h4>
+      <div class="d-flex gap-2">
+        <input type="text" id="lib-search-input" class="form-control form-control-sm" placeholder="🔍 Cerca titolo o autore..." onkeyup="filtraLibri()">
+        <button class="btn btn-sm btn-outline-secondary" onclick="sortaLibri('titolo')">Titolo</button>
+      </div>
+    </div>
+    <div id="lib-list-page">
+      <div id="lib-loader" class="text-center py-3"><div class="spinner-border text-primary spinner-border-sm"></div> Caricamento libri...</div>
+      <div id="lib-book-list" class="list-group"></div>
+    </div>
+    <div id="lib-details-page" style="display:none">
+      <button class="btn btn-outline-secondary btn-sm mb-3" onclick="mostraListaLibri()">← Indietro</button>
+      <div class="card p-3 mb-3" id="lib-full-specs"></div>
+      <button class="btn btn-primary w-100" onclick="apriFormPrenotazione()">📖 Prenota Ora</button>
+    </div>
+    <div id="lib-booking-section" style="display:none" class="card p-3 mt-3 border-primary">
+      <h5 class="text-primary mb-3">📝 Modulo Richiesta</h5>
+      <div class="mb-3">
+        <label class="form-label fw-bold">Ruolo:</label>
+        <select id="lib-ruolo" class="form-select" onchange="toggleLibFields()">
+          <option value="">Seleziona...</option>
+          <option value="alunno">Alunno</option>
+          <option value="docente">Docente</option>
+          <option value="ata">ATA</option>
+        </select>
+      </div>
+      <div id="lib-name-group" style="display:none">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Nome e Cognome:</label>
+          <input type="text" id="lib-user-fullname" class="form-control">
+        </div>
+        <div id="lib-class-group" class="mb-3" style="display:none">
+          <label class="form-label fw-bold">Classe:</label>
+          <input type="text" id="lib-user-class" class="form-control" placeholder="Es: 5CIA">
+        </div>
+        <button class="btn btn-success w-100" onclick="confermaPrenotazione()">✅ Conferma Prenotazione</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EVACUAZIONE ── -->
+  <div id="pane-evac" class="hide">
+    <h4 class="mb-3">&#128680; Gestione Evacuazione</h4>
+    <div class="card p-3 mb-3">
+      <label class="form-label fw-bold mb-2">Classe</label>
+      <select id="evac-classe" class="form-select" onchange="evacCaricaStudenti()">
+        <option value="">-- Seleziona la classe --</option>
+      </select>
+      <div id="evac-classe-loader" class="hide mt-2 small text-muted">
+        <span class="spinner-border spinner-border-sm me-1"></span> Caricamento...
+      </div>
+    </div>
+    <div id="evac-studenti-card" class="card p-3 mb-3" style="display:none;">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <b>Studenti</b><div id="evac-stats"></div>
+      </div>
+      <small class="text-muted d-block mb-2">
+        <span class="badge bg-secondary">A</span> Assente &nbsp;
+        <span class="badge bg-warning text-dark">F</span> Ferito &nbsp;
+        <span class="badge bg-danger">D</span> Disperso
+      </small>
+      <div id="evac-student-list"></div>
+    </div>
+    <div class="card p-3 mb-3">
+      <label class="form-label fw-bold">Docenti presenti <span class="text-danger">*</span></label>
+      <small class="text-muted d-block mb-1">Cognomi separati da virgola</small>
+      <input type="text" id="evac-doc-presenti" class="form-control" placeholder="es. Rossi, Bianchi">
+    </div>
+    <div class="card p-3 mb-3">
+      <label class="form-label fw-bold">Docenti dispersi <span class="text-muted fw-normal">(opzionale)</span></label>
+      <input type="text" id="evac-doc-dispersi" class="form-control" placeholder="es. Colombo">
+    </div>
+    <div class="card p-3 mb-3">
+      <label class="form-label fw-bold">Docenti feriti <span class="text-muted fw-normal">(opzionale)</span></label>
+      <input type="text" id="evac-doc-feriti" class="form-control" placeholder="es. Verdi">
+    </div>
+    <div class="card p-3 mb-3">
+      <label class="form-label fw-bold mb-2">Punto di raccolta <span class="text-danger">*</span></label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button type="button" class="btn btn-outline-secondary" id="pdr-cb" onclick="evacSelPDR(this,0)">Cortile biennio</button>
+        <button type="button" class="btn btn-outline-secondary" id="pdr-ct" onclick="evacSelPDR(this,1)">Cortile triennio</button>
+        <button type="button" class="btn btn-outline-secondary" id="pdr-rg" onclick="evacSelPDR(this,2)">Retro galleria</button>
+        <button type="button" class="btn btn-outline-secondary" id="pdr-ip" onclick="evacSelPDR(this,3)">Ingresso principale</button>
+      </div>
+    </div>
+    <button type="button" id="evac-submit-btn" class="btn btn-danger w-100 py-3 fw-bold" onclick="evacInviaReport()">Invia Report Evacuazione</button>
+    <div id="evac-loader" class="text-center mt-2 hide">
+      <span class="spinner-border text-danger spinner-border-sm"></span> Invio...
+    </div>
+  </div>
+
+  <div id="loader-dash" class="text-center mt-4 hide">
     <div class="spinner-border text-primary"></div>
-    <div class="loader-text">Operazione in corso, non chiudere la pagina...</div>
   </div>
 </div>
 
-<!-- Contenitore toast notification -->
-<div class="toast-container-fixed" id="toast-container"></div>
-
-<!-- Banner "Installa App" (PWA) -->
-<div id="install-banner" role="dialog" aria-label="Installa RivApp">
-  <span class="ib-icon">📲</span>
-  <div class="ib-text">
-    <strong>Installa RivApp</strong>
-    <small>Aggiungila alla schermata Home per accedere più velocemente.</small>
-  </div>
-  <button class="btn-install-yes" id="btn-install">Installa</button>
-  <button class="btn-install-no" id="btn-dismiss-install" aria-label="Chiudi">✕</button>
-</div>
-
+<!-- ══════════════ MODALI ══════════════ -->
 <div class="modal fade" id="modalPwd" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -390,18 +522,26 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ======================= URL BACKEND (gia' corretto) =======================
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
 const API_URL = "https://script.google.com/macros/s/AKfycbx1n4GG2ifNYkvEBeHTPhKxxxgJckfA9NhEx5VPJEroJn68KF3Ex_w9StYIkif9Y63mZw/exec";
-// ===========================================================================
 
 let stateUser = null;
 let stateDashboard = null;
 let pendingForceEsonero = null;
 let sessionToken = localStorage.getItem('cdc_token') || null;
+let isSegreteria = false;
+
+// Stato orario
+let orarioDocentiList = [];    // lista docenti caricata una volta
+let orarioDocenteCorrente = null; // null = orario proprio
 
 const GIORNI_BREVI = ["LUN","MAR","MER","GIO","VEN","SAB","DOM"];
 
-// ======================= API LAYER (GET, niente CORS) =======================
+// ═══════════════════════════════════════════════════════════════
+// API LAYER
+// ═══════════════════════════════════════════════════════════════
 async function apiCall(action, payload) {
   const params = new URLSearchParams({
     action: action,
@@ -415,20 +555,18 @@ async function apiCall(action, payload) {
     throw new Error('Impossibile contattare il server. Controlla la connessione.');
   }
   let data;
-  try {
-    data = await res.json();
-  } catch (parseErr) {
-    throw new Error('Risposta server non valida.');
-  }
+  try { data = await res.json(); }
+  catch (parseErr) { throw new Error('Risposta server non valida.'); }
   if (data && data.code === 'AUTH') {
-    sessionToken = null;
-    localStorage.removeItem('cdc_token');
-    logout();
+    sessionToken = null; localStorage.removeItem('cdc_token'); logout();
     throw new Error(data.error || 'Sessione scaduta.');
   }
   return data;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════════════
 function show(id) { document.getElementById(id).classList.remove('hide'); }
 function hide(id) { document.getElementById(id).classList.add('hide'); }
 function showError(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.remove('hide'); }
@@ -436,37 +574,6 @@ function clearErr(id) { hide(id); document.getElementById(id).textContent = ''; 
 function showOk(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.remove('hide'); }
 function loaderLogin(on) { on ? show('loader-login') : hide('loader-login'); }
 function loaderDash(on)  { on ? show('loader-dash')  : hide('loader-dash');  }
-
-// --- Toast notification (usa Bootstrap toast, niente alert invasivi) ---
-function toast(msg, tipo) {
-  // tipo: 'success' | 'error' | 'warning' | 'info' (default: info)
-  const tipi = {
-    success: { cls:'bg-success text-white', icon:'✓' },
-    error:   { cls:'bg-danger text-white',  icon:'✕' },
-    warning: { cls:'bg-warning text-dark',  icon:'⚠' },
-    info:    { cls:'bg-primary text-white', icon:'ℹ' }
-  };
-  const t = tipi[tipo] || tipi.info;
-  const cont = document.getElementById('toast-container');
-  if (!cont) { alert(msg); return; } // fallback se il contenitore non c'è
-  const el = document.createElement('div');
-  el.className = 'toast align-items-center border-0 ' + t.cls + ' show mb-2';
-  el.setAttribute('role', tipo === 'error' ? 'alert' : 'status');
-  el.innerHTML =
-    '<div class="d-flex">' +
-      '<div class="toast-body"><span class="me-2">' + t.icon + '</span>' + escapeHtml(msg) + '</div>' +
-      '<button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Chiudi"></button>' +
-    '</div>';
-  // sfondo chiaro per warning (testo scuro): btn-close normale, non bianca
-  if (tipo === 'warning') {
-    const btn = el.querySelector('.btn-close');
-    btn.classList.remove('btn-close-white');
-  }
-  cont.appendChild(el);
-  const t2 = new bootstrap.Toast(el, { autohide: tipo !== 'error', delay: 4000 });
-  t2.show();
-  el.addEventListener('hidden.bs.toast', function() { el.remove(); });
-}
 
 function _formatDateISO(d) {
   return d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0"+d.getDate()).slice(-2);
@@ -476,6 +583,9 @@ function escapeHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
+// ═══════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════
 function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pwd   = document.getElementById('login-pwd').value;
@@ -492,7 +602,7 @@ function doLogin() {
       localStorage.setItem('cdc_token', sessionToken);
       stateUser = res.user;
       localStorage.setItem('cdc_user', JSON.stringify(res.user));
-      if (res.isFirstAccess) toast('Primo accesso effettuato. Ti consigliamo di cambiare la password dal pulsante 🔑 in alto a destra.', 'info');
+      if (res.isFirstAccess) alert('Primo accesso effettuato. Ti consigliamo di cambiare la password dal pulsante 🔑 in alto a destra.');
       mostraDashboard();
     })
     .catch(function(err) {
@@ -511,6 +621,9 @@ function logout() {
   show('view-login');
   hide('reset-step1'); hide('reset-step2');
   document.getElementById('login-form').classList.remove('hide');
+  isSegreteria = false;
+  orarioDocentiList = [];
+  orarioDocenteCorrente = null;
 }
 
 function apriResetStep1() {
@@ -550,7 +663,7 @@ function confermaOTP() {
     .then(function(res) {
       loaderLogin(false);
       if (!res.success) return showError('reset2-err', res.message);
-      toast('Password aggiornata. Effettua il login.', 'success');
+      alert('Password aggiornata. Effettua il login.');
       tornaLogin();
       document.getElementById('login-email').value = email;
       document.getElementById('login-pwd').value = '';
@@ -576,14 +689,14 @@ function cambiaPwd() {
     .then(function(res) {
       if (!res.success) return showError('pwd-err', res.message);
       showOk('pwd-ok', 'Password aggiornata.');
-      setTimeout(function() {
-        bootstrap.Modal.getInstance(document.getElementById('modalPwd')).hide();
-        toast('Password aggiornata con successo.', 'success');
-      }, 1200);
+      setTimeout(function() { bootstrap.Modal.getInstance(document.getElementById('modalPwd')).hide(); }, 1200);
     })
     .catch(function(err) { showError('pwd-err', err.message); });
 }
 
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════
 function mostraDashboard() {
   hide('view-login'); show('view-dashboard'); show('navbar');
   document.getElementById('user-info').textContent = stateUser.displayName + ' (' + stateUser.email + ')';
@@ -595,32 +708,45 @@ function caricaDashboard() {
   apiCall('getDashboard', {})
     .then(function(res) {
       loaderDash(false);
-      if (res.error) return toast('Errore: ' + res.error, 'error');
+      if (res.error) return alert('Errore: ' + res.error);
       stateDashboard = res;
+      isSegreteria = !!res.isSegreteria;
+
+      // Tab sempre visibili a tutti
+      document.getElementById('tab-biblioteca').classList.remove('hide');
+
       if (res.isSegreteria) {
-        document.getElementById('tab-segr-li').classList.remove('hide');
-        document.getElementById('tab-coord-li').classList.add('hide');
-        document.getElementById('tab-cal-li').classList.remove('hide');
-        document.getElementById('tab-orario-li').classList.remove('hide');
-        document.getElementById('tab-scrutini-li').classList.remove('hide');
-        switchTab('segr');
+        // Segreteria vede TUTTO
+        document.getElementById('tab-segr').classList.remove('hide');
+        document.getElementById('tab-coord').classList.add('hide');
+        document.getElementById('tab-cal').classList.remove('hide');
+        document.getElementById('tab-orario').classList.remove('hide');
+        document.getElementById('tab-scrutini').classList.remove('hide');
+        document.getElementById('tab-evac').classList.remove('hide');
+        // CdC per segreteria: il tab "I miei CdC" resta sempre visibile (è il primo, senza .hide)
+
+        renderCdcList(res);           // renderizza CdC (lista vuota)
         renderSegreteria(res.segreteria);
+        switchTab('segr');
         return;
       }
+
+      // Docente normale
       renderCdcList(res);
-      if (res.isCoordinatore) { show('tab-coord-li'); renderCoordList(res); }
-      else { hide('tab-coord-li'); }
-      hide('tab-segr-li');
-      show('tab-cal-li');
-      show('tab-orario-li');
-      show('tab-scrutini-li');
+      if (res.isCoordinatore) { show('tab-coord'); renderCoordList(res); }
+      else { hide('tab-coord'); }
+      hide('tab-segr');
+      show('tab-cal');
+      show('tab-orario');
+      show('tab-scrutini');
+      document.getElementById('tab-evac').classList.remove('hide');
       switchTab('cdc');
     })
-    .catch(function(err) { loaderDash(false); toast('Errore server: ' + err.message, 'error'); });
+    .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
 }
 
 function switchTab(t) {
-  ['cdc','coord','segr','calendario','orario','scrutini'].forEach(function(x) {
+  ['cdc','coord','segr','calendario','orario','scrutini','biblioteca','evac'].forEach(function(x) {
     document.getElementById('pane-' + x).classList.add('hide');
     const tab = document.getElementById('tab-' + x);
     if (tab) tab.classList.remove('active');
@@ -629,17 +755,32 @@ function switchTab(t) {
   const tab = document.getElementById('tab-' + t);
   if (tab) tab.classList.add('active');
   if (t === 'calendario' && !calState.datiMese) caricaCalendarioAttivita();
+  if (t === 'evac') evacInit();
   if (t === 'orario') caricaOrario();
   if (t === 'scrutini') caricaScrutini();
+  if (t === 'biblioteca') caricaBiblioteca();
 }
 
+// ═══════════════════════════════════════════════════════════════
+// CDC LIST
+// ═══════════════════════════════════════════════════════════════
 function renderCdcList(d) {
-  document.getElementById('cnt-tot').textContent = d.oreTotali;
-  document.getElementById('cnt-soglia').textContent = d.soglia;
-  aggiornaContatoreOre(d.orePartecipazione, d.soglia);
+  // Contatori (la segreteria avrà 0 ovunque)
+  document.getElementById('cnt-tot').textContent = d.oreTotali || 0;
+  document.getElementById('cnt-soglia').textContent = d.soglia || 0;
+  aggiornaContatoreOre(d.orePartecipazione || 0, d.soglia || 0);
+
   const list = document.getElementById('cdc-list');
   list.innerHTML = '';
-  if (!d.cdc || d.cdc.length === 0) { show('cdc-empty'); return; }
+  if (!d.cdc || d.cdc.length === 0) {
+    if (isSegreteria) {
+      show('cdc-empty');
+      document.getElementById('cdc-empty').textContent = 'La segreteria non ha CdC propri. Usa la Vista segreteria per il riepilogo.';
+    } else {
+      show('cdc-empty');
+    }
+    return;
+  }
   hide('cdc-empty');
   d.cdc.forEach(function(c) {
     const passato = c.passato;
@@ -694,11 +835,7 @@ function cambiaStato(idCdc, nuovoStato) {
   apiCall('toggleEsonero', { idCdc: idCdc, nuovoStato: nuovoStato, forzaSottosoglia: false })
     .then(function(res) {
       loaderDash(false);
-      if (res.success) {
-        toast(nuovoStato === 'PARTECIPA' ? 'Partecipazione registrata.' : 'Esonero registrato.', 'success');
-        caricaDashboard();
-        return;
-      }
+      if (res.success) { caricaDashboard(); return; }
       if (res.requireConfirm) {
         pendingForceEsonero = { idCdc: idCdc };
         document.getElementById('ss-ore').textContent = res.oreFuture;
@@ -706,13 +843,11 @@ function cambiaStato(idCdc, nuovoStato) {
         new bootstrap.Modal(document.getElementById('modalSottoSoglia')).show();
         return;
       }
-      toast(res.message || 'Errore.', 'error');
+      alert(res.message || 'Errore.');
     })
-    .catch(function(err) { loaderDash(false); toast('Errore server: ' + err.message, 'error'); });
+    .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
 }
-
 function annullaForzaEsonero() { pendingForceEsonero = null; }
-
 function confermaForzaEsonero() {
   if (!pendingForceEsonero) return;
   const idCdc = pendingForceEsonero.idCdc;
@@ -720,10 +855,13 @@ function confermaForzaEsonero() {
   bootstrap.Modal.getInstance(document.getElementById('modalSottoSoglia')).hide();
   loaderDash(true);
   apiCall('toggleEsonero', { idCdc: idCdc, nuovoStato: 'ESONERATO', forzaSottosoglia: true })
-    .then(function(res) { loaderDash(false); if (!res.success) return toast(res.message || 'Errore.', 'error'); toast('Esonero registrato.', 'success'); caricaDashboard(); })
-    .catch(function(err) { loaderDash(false); toast('Errore server: ' + err.message, 'error'); });
+    .then(function(res) { loaderDash(false); if (!res.success) return alert(res.message || 'Errore.'); caricaDashboard(); })
+    .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
 }
 
+// ═══════════════════════════════════════════════════════════════
+// COORDINATORE
+// ═══════════════════════════════════════════════════════════════
 function renderCoordList(d) {
   const list = document.getElementById('coord-list');
   list.innerHTML = '';
@@ -738,19 +876,15 @@ function renderCoordList(d) {
     list.appendChild(item);
   });
 }
-
 let currentCoordCdcId = null;
-
 function apriCoordDetail(idCdc) {
   currentCoordCdcId = idCdc;
   loaderDash(true);
   apiCall('getCdcDettaglio', { idCdc: idCdc })
-    .then(function(res) { loaderDash(false); if (res.error) return toast(res.error, 'error'); renderCoordDetail(res); })
-    .catch(function(err) { loaderDash(false); toast('Errore: ' + err.message, 'error'); });
+    .then(function(res) { loaderDash(false); if (res.error) return alert(res.error); renderCoordDetail(res); })
+    .catch(function(err) { loaderDash(false); alert('Errore: ' + err.message); });
 }
-
 function chiudiCoordDetail() { hide('coord-detail'); currentCoordCdcId = null; }
-
 function renderCoordDetail(res) {
   const c = res.cdc;
   document.getElementById('coord-detail-title').innerHTML = 'Classe ' + escapeHtml(c.classe) + ' — ' + escapeHtml(c.dataIT) + ' (' + escapeHtml(c.oraInizio) + '-' + escapeHtml(c.oraFine) + ')';
@@ -780,19 +914,19 @@ function renderCoordDetail(res) {
   tbl.appendChild(tbody); cont.appendChild(tbl);
   show('coord-detail');
 }
-
 function coordCambiaStato(emailDocente, nuovoStato) {
   if (!currentCoordCdcId) return;
   loaderDash(true);
   apiCall('coordSetStato', { idCdc: currentCoordCdcId, emailDocente: emailDocente, nuovoStato: nuovoStato })
-    .then(function(res) { loaderDash(false); if (!res.success) return toast(res.message || 'Errore.', 'error'); toast('Stato aggiornato.', 'success'); apriCoordDetail(currentCoordCdcId); })
-    .catch(function(err) { loaderDash(false); toast('Errore: ' + err.message, 'error'); });
+    .then(function(res) { loaderDash(false); if (!res.success) return alert(res.message || 'Errore.'); apriCoordDetail(currentCoordCdcId); })
+    .catch(function(err) { loaderDash(false); alert('Errore: ' + err.message); });
 }
 
+// ═══════════════════════════════════════════════════════════════
+// VISTA SEGRETERIA
+// ═══════════════════════════════════════════════════════════════
 let segrData = null;
-
 function renderSegreteria(s) { segrData = s.docenti || []; filtraSegr(); }
-
 function filtraSegr() {
   const f = (document.getElementById('segr-filter').value || '').toLowerCase().trim();
   const tbody = document.getElementById('segr-tbody');
@@ -817,6 +951,9 @@ function filtraSegr() {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════
+// CALENDARIO ATTIVITÀ
+// ═══════════════════════════════════════════════════════════════
 let calState = {
   meseCorrente: new Date().getMonth() + 1,
   annoCorrente: new Date().getFullYear(),
@@ -830,31 +967,21 @@ if (oggiInit.getFullYear() < 2025 || (oggiInit.getFullYear() === 2025 && oggiIni
 function caricaCalendarioAttivita() {
   loaderDash(true);
   apiCall('getCalendarioAttivita', { mese: calState.meseCorrente, anno: calState.annoCorrente })
-    .then(function(res) {
-      loaderDash(false);
-      calState.datiMese = res;
-      calState.mesiDisponibili = res.mesiDisponibili || [];
-      renderCalendario();
-    })
-    .catch(function(err) { loaderDash(false); toast('Errore caricamento calendario: ' + err.message, 'error'); });
+    .then(function(res) { loaderDash(false); calState.datiMese = res; calState.mesiDisponibili = res.mesiDisponibili || []; renderCalendario(); })
+    .catch(function(err) { loaderDash(false); alert('Errore caricamento calendario: ' + err.message); });
 }
-
 function cambiaMese(delta) {
   let m = calState.meseCorrente + delta, a = calState.annoCorrente;
-  if (m < 1) { m = 12; a--; }
-  if (m > 12) { m = 1; a++; }
+  if (m < 1) { m = 12; a--; } if (m > 12) { m = 1; a++; }
   calState.meseCorrente = m; calState.annoCorrente = a;
   caricaCalendarioAttivita();
 }
-
 function vaiAOggi() {
   const oggi = new Date();
-  calState.meseCorrente = oggi.getMonth() + 1;
-  calState.annoCorrente = oggi.getFullYear();
+  calState.meseCorrente = oggi.getMonth() + 1; calState.annoCorrente = oggi.getFullYear();
   if (oggi < new Date(2025,8,1)) { calState.meseCorrente = 9; calState.annoCorrente = 2025; }
   caricaCalendarioAttivita();
 }
-
 function renderCalendario() {
   const d = calState.datiMese;
   if (!d) return;
@@ -863,9 +990,7 @@ function renderCalendario() {
   const headerGiorni = document.getElementById('cal-header-giorni');
   headerGiorni.innerHTML = '';
   GIORNI_BREVI.forEach(function(g) {
-    const cell = document.createElement('div');
-    cell.className = 'cal-cell-header';
-    cell.textContent = g;
+    const cell = document.createElement('div'); cell.className = 'cal-cell-header'; cell.textContent = g;
     headerGiorni.appendChild(cell);
   });
   const grid = document.getElementById('cal-grid');
@@ -876,59 +1001,47 @@ function renderCalendario() {
   let primoGiornoIso = primoGiorno.getDay();
   primoGiornoIso = primoGiornoIso === 0 ? 7 : primoGiornoIso;
   for (let i = 1; i < primoGiornoIso; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'cal-cell other-month';
+    const cell = document.createElement('div'); cell.className = 'cal-cell other-month';
     cell.innerHTML = '<div class="cal-day-num" style="color:#adb5bd;">·</div>';
     grid.appendChild(cell);
   }
   const oggiISO = _formatDateISO(new Date());
   for (let g = 1; g <= giorniNelMese; g++) {
-    const dataObj = new Date(d.anno, d.mese - 1, g);
-    const dataISO = _formatDateISO(dataObj);
+    const dataISO = _formatDateISO(new Date(d.anno, d.mese - 1, g));
     const attivitaGiorno = (d.attivitaPerGiorno && d.attivitaPerGiorno[dataISO]) || [];
     const cell = document.createElement('div');
     cell.className = 'cal-cell';
     if (dataISO === oggiISO) cell.classList.add('today');
     let html = '<div class="cal-day-num">' + g + '</div>';
     attivitaGiorno.forEach(function(att) {
-      html += '<span class="cal-attivita-badge" title="' + escapeHtml(att) + '" onclick="event.stopPropagation();apriDettaglioAttivita(\'' +
-        escapeHtml(att).replace(/'/g, "\\'") + '\')">' + escapeHtml(att) + '</span>';
+      html += '<span class="cal-attivita-badge" title="' + escapeHtml(att) + '" onclick="event.stopPropagation();apriDettaglioAttivita(\'' + escapeHtml(att).replace(/'/g, "\\'") + '\')">' + escapeHtml(att) + '</span>';
     });
     cell.innerHTML = html;
-    // Su smartphone i badge sono pallini: tocco la cella per aprire la prima attività.
     if (attivitaGiorno.length > 0) {
       cell.style.cursor = 'pointer';
-      cell.onclick = function() {
-        if (window.matchMedia('(max-width:575px)').matches) {
-          apriDettaglioAttivita(attivitaGiorno[0]);
-        }
-      };
+      cell.onclick = function() { if (window.matchMedia('(max-width:575px)').matches) apriDettaglioAttivita(attivitaGiorno[0]); };
     }
     grid.appendChild(cell);
   }
   const ultimoGiornoIso = ultimoGiorno.getDay();
   const giorniDopo = ultimoGiornoIso === 0 ? 0 : 7 - ultimoGiornoIso;
   for (let i = 0; i < giorniDopo; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'cal-cell other-month';
+    const cell = document.createElement('div'); cell.className = 'cal-cell other-month';
     cell.innerHTML = '<div class="cal-day-num" style="color:#adb5bd;">·</div>';
     grid.appendChild(cell);
   }
 }
-
 function apriDettaglioAttivita(nomeAttivita) {
   loaderDash(true);
   apiCall('getDettaglioAttivita', { nomeAttivita: nomeAttivita })
     .then(function(res) { loaderDash(false); renderModaleAttivita(res); })
-    .catch(function(err) { loaderDash(false); toast('Errore: ' + err.message, 'error'); });
+    .catch(function(err) { loaderDash(false); alert('Errore: ' + err.message); });
 }
-
 function renderModaleAttivita(res) {
   document.getElementById('modal-attivita-titolo').textContent = res.trovata ? ('📌 ' + res.nome + ' (' + res.totale + ' occorrenze)') : ('📌 ' + res.nome);
   const body = document.getElementById('modal-attivita-body');
-  if (!res.trovata) {
-    body.innerHTML = '<div class="alert alert-warning">Non c\'è alcun calendario per l\'attività selezionata.</div>';
-  } else {
+  if (!res.trovata) { body.innerHTML = '<div class="alert alert-warning">Non c\'è alcun calendario per l\'attività selezionata.</div>'; }
+  else {
     let html = '';
     res.mesi.forEach(function(m) {
       html += '<div class="detail-month-block"><h6>' + m.mese + ' ' + m.anno + '</h6><div class="d-flex flex-wrap gap-1">';
@@ -939,49 +1052,117 @@ function renderModaleAttivita(res) {
   }
   new bootstrap.Modal(document.getElementById('modalAttivita')).show();
 }
-
 function toggleVistaElenco() {
   calState.vistaElenco = !calState.vistaElenco;
   const btn = document.getElementById('btn-toggle-vista');
-  if (calState.vistaElenco) {
-    hide('vista-calendario'); show('vista-elenco');
-    btn.textContent = '📅 Calendario';
-    caricaElencoAttivita();
-  } else {
-    show('vista-calendario'); hide('vista-elenco');
-    btn.textContent = '📋 Elenco attività';
-  }
+  if (calState.vistaElenco) { hide('vista-calendario'); show('vista-elenco'); btn.textContent = '📅 Calendario'; caricaElencoAttivita(); }
+  else { show('vista-calendario'); hide('vista-elenco'); btn.textContent = '📋 Elenco attività'; }
 }
-
 function caricaElencoAttivita() {
   loaderDash(true);
   apiCall('getElencoAttivita', {})
     .then(function(res) { loaderDash(false); renderElencoAttivita(res); })
-    .catch(function(err) { loaderDash(false); toast('Errore: ' + err.message, 'error'); });
+    .catch(function(err) { loaderDash(false); alert('Errore: ' + err.message); });
 }
-
 function renderElencoAttivita(lista) {
   const cont = document.getElementById('elenco-attivita-list');
   if (!lista || lista.length === 0) { cont.innerHTML = '<div class="alert alert-light text-center">Nessuna attività trovata.</div>'; return; }
   cont.innerHTML = '';
   lista.forEach(function(a) {
-    const div = document.createElement('div');
-    div.className = 'elenco-attivita-item';
+    const div = document.createElement('div'); div.className = 'elenco-attivita-item';
     div.innerHTML = escapeHtml(a.nome) + ' <span class="badge bg-secondary">' + a.conteggio + '</span>';
     div.onclick = function() { apriDettaglioAttivita(a.nome); };
     cont.appendChild(div);
   });
 }
 
+// ═══════════════════════════════════════════════════════════════
+// ORARIO  (con ricerca docente per la segreteria)
+// ═══════════════════════════════════════════════════════════════
+
 function caricaOrario() {
-  loaderDash(true);
-  apiCall('getMioOrario', {})
+  // Se segreteria: mostra search box e carica lista docenti (una volta sola)
+  if (isSegreteria) {
+    document.getElementById('orario-search-wrap').classList.remove('hide');
+    if (orarioDocentiList.length === 0) {
+      // Carica lista docenti
+      apiCall('getTuttiDocenti', {})
+        .then(function(res) {
+          if (res.success) orarioDocentiList = res.docenti || [];
+        })
+        .catch(function() {});
+    }
+    // Se non c'è un docente selezionato, mostra messaggio
+    if (!orarioDocenteCorrente) {
+      document.getElementById('orario-nome-docente').textContent = 'Cerca un docente per visualizzarne l\'orario.';
+      document.getElementById('orario-container').innerHTML = '';
+      return;
+    }
+    // Altrimenti carica l'orario del docente selezionato
+    _fetchOrario(orarioDocenteCorrente);
+  } else {
+    // Docente normale: nasconde search, carica il proprio orario
+    document.getElementById('orario-search-wrap').classList.add('hide');
+    _fetchOrario(null);
+  }
+}
+
+function _fetchOrario(nomeDocente) {
+  const ldr = document.getElementById('orario-loader');
+  ldr.classList.remove('hide');
+  document.getElementById('orario-container').innerHTML = '';
+  apiCall('getOrarioPerDocente', { nomeDocente: nomeDocente || '' })
     .then(function(res) {
-      loaderDash(false);
-      if (res.error) return toast(res.error, 'error');
+      ldr.classList.add('hide');
+      if (res.error) { document.getElementById('orario-nome-docente').textContent = res.error; return; }
       renderOrario(res);
     })
-    .catch(function(err) { loaderDash(false); toast('Errore caricamento orario: ' + err.message, 'error'); });
+    .catch(function(err) {
+      ldr.classList.add('hide');
+      document.getElementById('orario-nome-docente').textContent = 'Errore: ' + err.message;
+    });
+}
+
+function filtraDocentiOrario() {
+  const q = (document.getElementById('orario-docente-input').value || '').toLowerCase().trim();
+  const sugg = document.getElementById('orario-docenti-suggerimenti');
+  sugg.innerHTML = '';
+  if (!q || q.length < 2) return;
+  const matches = orarioDocentiList.filter(function(d) {
+    return d.displayName.toLowerCase().includes(q);
+  }).slice(0, 10);
+  if (matches.length === 0) {
+    sugg.innerHTML = '<div class="sugg-item text-muted">Nessun docente trovato</div>';
+    return;
+  }
+  matches.forEach(function(d) {
+    const item = document.createElement('div');
+    item.className = 'sugg-item';
+    item.textContent = d.displayName;
+    item.onclick = function() {
+      document.getElementById('orario-docente-input').value = d.displayName;
+      sugg.innerHTML = '';
+      orarioDocenteCorrente = d.displayName;
+      _fetchOrario(d.displayName);
+    };
+    sugg.appendChild(item);
+  });
+}
+
+// Chiudi suggerimenti cliccando fuori
+document.addEventListener('click', function(e) {
+  const sugg = document.getElementById('orario-docenti-suggerimenti');
+  if (sugg && !sugg.contains(e.target) && e.target.id !== 'orario-docente-input') {
+    sugg.innerHTML = '';
+  }
+});
+
+function resetRicercaDocente() {
+  document.getElementById('orario-docente-input').value = '';
+  document.getElementById('orario-docenti-suggerimenti').innerHTML = '';
+  orarioDocenteCorrente = null;
+  document.getElementById('orario-nome-docente').textContent = 'Cerca un docente per visualizzarne l\'orario.';
+  document.getElementById('orario-container').innerHTML = '';
 }
 
 function renderOrario(data) {
@@ -997,9 +1178,11 @@ function renderOrario(data) {
     giorni.forEach(function(g) {
       const cella = (orario[g] && orario[g][ora]) ? orario[g][ora] : null;
       if (cella) {
-        html += '<td class="bg-ora"><strong>' + escapeHtml(cella.classe) + '</strong><br>';
-        if (cella.aula) html += '<small>Aula ' + escapeHtml(cella.aula) + '</small><br>';
-        if (cella.compresenti) html += '<small class="text-muted">con ' + escapeHtml(cella.compresenti) + '</small>';
+        html += '<td class="bg-ora">';
+        if (cella.materia) html += '<span class="materia-badge">' + escapeHtml(cella.materia) + '</span><br>';
+        html += '<strong>' + escapeHtml(cella.classe) + '</strong>';
+        if (cella.aula) html += '<br><small>Aula ' + escapeHtml(cella.aula) + '</small>';
+        if (cella.compresenti) html += '<br><span class="compresenti-txt">+ ' + escapeHtml(cella.compresenti) + '</span>';
         html += '</td>';
       } else {
         html += '<td class="text-muted">—</td>';
@@ -1011,50 +1194,260 @@ function renderOrario(data) {
   document.getElementById('orario-container').innerHTML = html;
 }
 
-// ============================ SCRUTINI ============================
+// ═══════════════════════════════════════════════════════════════
+// SCRUTINI
+// ═══════════════════════════════════════════════════════════════
 function caricaScrutini() {
   loaderDash(true);
   apiCall('getScrutini', {})
-    .then(function(res) {
-      loaderDash(false);
-      if (res.error) return toast('Errore: ' + res.error, 'error');
-      renderScrutini(res.scrutini || []);
-    })
-    .catch(function(err) { loaderDash(false); toast('Errore caricamento scrutini: ' + err.message, 'error'); });
+    .then(function(res) { loaderDash(false); if (res.error) return alert('Errore: ' + res.error); renderScrutini(res.scrutini || []); })
+    .catch(function(err) { loaderDash(false); alert('Errore caricamento scrutini: ' + err.message); });
 }
-
 function renderScrutini(lista) {
   const cont = document.getElementById('scrutini-container');
-  if (!lista || lista.length === 0) {
-    cont.innerHTML = '<div class="alert alert-light text-center">Nessuno scrutinio trovato per le tue classi.</div>';
-    return;
-  }
-  // Raggruppo per periodo (Gennaio / Giugno)
+  if (!lista || lista.length === 0) { cont.innerHTML = '<div class="alert alert-light text-center">Nessuno scrutinio trovato per le tue classi.</div>'; return; }
   const perPeriodo = {};
-  lista.forEach(function(s) {
-    if (!perPeriodo[s.periodo]) perPeriodo[s.periodo] = [];
-    perPeriodo[s.periodo].push(s);
-  });
+  lista.forEach(function(s) { if (!perPeriodo[s.periodo]) perPeriodo[s.periodo] = []; perPeriodo[s.periodo].push(s); });
   let html = '';
   Object.keys(perPeriodo).forEach(function(periodo) {
-    html += '<h5 class="mt-3 mb-2">' + escapeHtml(periodo) + '</h5>';
-    html += '<div class="list-group mb-3">';
+    html += '<h5 class="mt-3 mb-2">' + escapeHtml(periodo) + '</h5><div class="list-group mb-3">';
     perPeriodo[periodo].forEach(function(s) {
-      html += '<div class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2' +
-              (s.passato ? ' cdc-passato' : '') + '">';
-      html += '<div><strong>Classe ' + escapeHtml(s.classe) + '</strong><br>' +
-              '<small class="small-muted">' + escapeHtml(s.dataIT) + ' · ' +
-              escapeHtml(s.oraInizio) + '-' + escapeHtml(s.oraFine) +
-              ' (' + s.durataMin + ' min)</small></div>';
-      html += '<span class="badge ' + (s.passato ? 'bg-secondary' : 'bg-primary') + '">' +
-              (s.passato ? 'Concluso' : 'Da svolgere') + '</span>';
+      html += '<div class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2' + (s.passato ? ' cdc-passato' : '') + '">';
+      html += '<div><strong>Classe ' + escapeHtml(s.classe) + '</strong><br><small class="small-muted">' + escapeHtml(s.dataIT) + ' · ' + escapeHtml(s.oraInizio) + '-' + escapeHtml(s.oraFine) + ' (' + s.durataMin + ' min)</small></div>';
+      html += '<span class="badge ' + (s.passato ? 'bg-secondary' : 'bg-primary') + '">' + (s.passato ? 'Concluso' : 'Da svolgere') + '</span>';
       html += '</div>';
     });
     html += '</div>';
   });
   cont.innerHTML = html;
 }
-  
+
+// ═══════════════════════════════════════════════════════════════
+// BIBLIOTECA
+// ═══════════════════════════════════════════════════════════════
+let libriGlobali = [];
+let libroCorrente = null;
+let sortLibroField = 'titolo', sortLibroAsc = true;
+
+function caricaBiblioteca() {
+  document.getElementById('lib-loader').style.display = 'block';
+  document.getElementById('lib-book-list').innerHTML = '';
+  apiCall('getBooks', {})
+    .then(function(res) {
+      document.getElementById('lib-loader').style.display = 'none';
+      if (!res.success) { document.getElementById('lib-book-list').innerHTML = '<div class="alert alert-danger">Errore: ' + (res.message || 'Impossibile caricare i libri') + '</div>'; return; }
+      libriGlobali = (res.books || []).map(function(libro) {
+        libro.autore_completo = ((libro.nome_autore || '') + ' ' + (libro.cognome_autore || '')).trim() || libro.autore || 'N.D.';
+        return libro;
+      });
+      renderListaLibri(libriGlobali);
+    })
+    .catch(function(err) { document.getElementById('lib-loader').style.display = 'none'; document.getElementById('lib-book-list').innerHTML = '<div class="alert alert-danger">Errore di connessione: ' + err.message + '</div>'; });
+}
+function renderListaLibri(lista) {
+  const container = document.getElementById('lib-book-list');
+  if (!lista || lista.length === 0) { container.innerHTML = '<div class="alert alert-light text-center">Nessun libro trovato.</div>'; return; }
+  container.innerHTML = lista.map(function(libro) {
+    return '<a href="#" class="list-group-item list-group-item-action d-flex flex-wrap justify-content-between align-items-center" onclick="mostraDettagliLibro(' + libro.id + ');return false;">' +
+      '<div><strong>' + escapeHtml(libro.titolo || 'Senza Titolo') + '</strong><br><small class="text-muted">' + escapeHtml(libro.autore_completo) + '</small></div>' +
+      '<span class="badge bg-secondary rounded-pill">' + escapeHtml(libro.armadio || '?') + '</span></a>';
+  }).join('');
+}
+function filtraLibri() {
+  const term = document.getElementById('lib-search-input').value.toLowerCase();
+  renderListaLibri(libriGlobali.filter(function(libro) { return (libro.titolo || '').toLowerCase().includes(term) || (libro.autore_completo || '').toLowerCase().includes(term); }));
+}
+function sortaLibri(campo) {
+  if (sortLibroField === campo) sortLibroAsc = !sortLibroAsc; else { sortLibroField = campo; sortLibroAsc = true; }
+  libriGlobali.sort(function(a, b) { let vA = (a[campo] || '').toString().toLowerCase(), vB = (b[campo] || '').toString().toLowerCase(); return sortLibroAsc ? vA.localeCompare(vB) : vB.localeCompare(vA); });
+  renderListaLibri(libriGlobali);
+}
+function mostraDettagliLibro(id) {
+  libroCorrente = libriGlobali.find(function(libro) { return libro.id === id; });
+  if (!libroCorrente) return;
+  let html = '<table class="table table-sm table-bordered">';
+  for (let key in libroCorrente) {
+    if (!['id','autore_completo','nome_autore','cognome_autore','autore'].includes(key)) {
+      html += '<tr><th class="bg-light w-30">' + escapeHtml(key.replace(/_/g, ' ').toUpperCase()) + '</th><td>' + escapeHtml(libroCorrente[key] || '—') + '</td></tr>';
+    }
+  }
+  html += '</table>';
+  document.getElementById('lib-full-specs').innerHTML = html;
+  document.getElementById('lib-list-page').style.display = 'none';
+  document.getElementById('lib-details-page').style.display = 'block';
+  document.getElementById('lib-booking-section').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+function mostraListaLibri() {
+  document.getElementById('lib-details-page').style.display = 'none';
+  document.getElementById('lib-booking-section').style.display = 'none';
+  document.getElementById('lib-list-page').style.display = 'block';
+}
+function apriFormPrenotazione() {
+  document.getElementById('lib-booking-section').style.display = 'block';
+  document.getElementById('lib-booking-section').scrollIntoView({ behavior: 'smooth' });
+}
+function toggleLibFields() {
+  const ruolo = document.getElementById('lib-ruolo').value;
+  document.getElementById('lib-name-group').style.display = ruolo ? 'block' : 'none';
+  document.getElementById('lib-class-group').style.display = (ruolo === 'alunno') ? 'block' : 'none';
+}
+function confermaPrenotazione() {
+  const nome = document.getElementById('lib-user-fullname').value.trim();
+  const ruolo = document.getElementById('lib-ruolo').value;
+  const classe = document.getElementById('lib-user-class').value.trim();
+  if (!nome) return alert('Inserisci nome e cognome.');
+  if (ruolo === 'alunno' && !classe) return alert('Inserisci la classe.');
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Invio...';
+  apiCall('processBooking', { nomeCognome: nome, titoloLibro: libroCorrente.titolo, autoreLibro: libroCorrente.autore_completo, armadioLibro: libroCorrente.armadio, tipoUtente: ruolo, classe: classe, emailRichiedente: stateUser ? stateUser.email : '' })
+    .then(function(res) {
+      btn.disabled = false; btn.innerHTML = originalText;
+      if (res.success) {
+        document.getElementById('lib-user-fullname').value = '';
+        document.getElementById('lib-user-class').value = '';
+        document.getElementById('lib-ruolo').value = '';
+        document.getElementById('lib-name-group').style.display = 'none';
+        document.getElementById('lib-class-group').style.display = 'none';
+        document.getElementById('lib-booking-section').style.display = 'none';
+        alert('✅ ' + res.message + '\nRiceverai una email di conferma a breve.');
+        mostraListaLibri();
+      } else { alert('❌ Errore: ' + (res.message || 'Riprova più tardi.')); }
+    })
+    .catch(function(err) { btn.disabled = false; btn.innerHTML = originalText; alert('❌ Errore di connessione: ' + err.message); });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EVACUAZIONE
+// ═══════════════════════════════════════════════════════════════
+var EVAC_DB = {}, evacStati = {}, evacPDR = "", evacReady = false;
+var PDR_LABELS = ["Cortile biennio","Cortile triennio","Retro galleria","Ingresso principale"];
+
+function evacInit() {
+  if (evacReady) return;
+  evacReady = true;
+  var sel = document.getElementById("evac-classe");
+  var ldr = document.getElementById("evac-classe-loader");
+  ldr.classList.remove("hide"); sel.disabled = true;
+  apiCall("getAlunni", {})
+    .then(function(res) {
+      ldr.classList.add("hide"); sel.disabled = false;
+      if (!res || !res.success) { alert("Errore caricamento alunni: " + (res ? res.message : "?")); return; }
+      var db = res.alunni || {};
+      Object.assign(EVAC_DB, db);
+      Object.keys(db).sort().forEach(function(cls) {
+        var opt = document.createElement("option"); opt.value = cls;
+        var lbl = db[cls].label.split(" ");
+        opt.textContent = cls + " - " + (lbl.length > 1 ? lbl.slice(1).join(" ") : db[cls].label);
+        sel.appendChild(opt);
+      });
+    })
+    .catch(function(err) { ldr.classList.add("hide"); sel.disabled = false; alert("Errore connessione: " + err.message); });
+}
+function evacCaricaStudenti() {
+  var cls = document.getElementById("evac-classe").value;
+  var card = document.getElementById("evac-studenti-card");
+  var lst = document.getElementById("evac-student-list");
+  evacStati = {};
+  if (!cls) { card.style.display = "none"; lst.innerHTML = ""; return; }
+  card.style.display = "block"; lst.innerHTML = "";
+  EVAC_DB[cls].students.forEach(function(s, i) {
+    evacStati[i] = null;
+    var d = document.createElement("div"); d.className = "evac-row"; d.id = "er" + i;
+    var nameDiv = document.createElement("div"); nameDiv.className = "evac-name";
+    nameDiv.innerHTML = "<strong>" + escapeHtml(s.cognome) + "</strong><small>" + escapeHtml(s.nome) + "</small>";
+    var btnDiv = document.createElement("div"); btnDiv.className = "evac-btns";
+    ["A","F","D"].forEach(function(stato) {
+      var btn = document.createElement("button"); btn.type = "button"; btn.className = "evac-btn";
+      btn.textContent = stato; btn.setAttribute("data-idx", i); btn.setAttribute("data-stato", stato);
+      (function(idx, st) { btn.addEventListener("click", function() { evacT(idx, st); }); })(i, stato);
+      btnDiv.appendChild(btn);
+    });
+    d.appendChild(nameDiv); d.appendChild(btnDiv); lst.appendChild(d);
+  });
+  evacStat();
+}
+function evacT(i, s) {
+  evacStati[i] = evacStati[i] === s ? null : s;
+  var r = document.getElementById("er" + i);
+  var bs = r.querySelectorAll(".evac-btn");
+  bs.forEach(function(b) { b.className = "evac-btn"; });
+  if (evacStati[i]) { var map = {A:0,F:1,D:2}; bs[map[evacStati[i]]].classList.add("on-" + evacStati[i]); }
+  evacStat();
+}
+function evacStat() {
+  var cls = document.getElementById("evac-classe").value;
+  if (!cls || !EVAC_DB[cls]) return;
+  var tot = EVAC_DB[cls].students.length;
+  var v = Object.values(evacStati);
+  var nA = v.filter(function(x){return x==="A";}).length;
+  var nF = v.filter(function(x){return x==="F";}).length;
+  var nD = v.filter(function(x){return x==="D";}).length;
+  var html = "<span class='badge bg-primary'>" + tot + " tot.</span> <span class='badge bg-success'>" + (tot-nA-nF-nD) + " pres.</span>";
+  if (nA) html += "<span class='badge bg-secondary ms-1'>" + nA + " ass.</span>";
+  if (nF) html += "<span class='badge bg-warning text-dark ms-1'>" + nF + " fer.</span>";
+  if (nD) html += "<span class='badge bg-danger ms-1'>" + nD + " disp.</span>";
+  document.getElementById("evac-stats").innerHTML = html;
+}
+function evacSelPDR(btn, idx) {
+  ["pdr-cb","pdr-ct","pdr-rg","pdr-ip"].forEach(function(id) { var el = document.getElementById(id); if (el) el.classList.remove("evac-pdr-on"); });
+  btn.classList.add("evac-pdr-on"); evacPDR = PDR_LABELS[idx];
+}
+function evacInviaReport() {
+  var cls = document.getElementById("evac-classe").value;
+  var docPres = (document.getElementById("evac-doc-presenti").value || "").trim();
+  var docDisp = (document.getElementById("evac-doc-dispersi").value || "").trim();
+  var docFer  = (document.getElementById("evac-doc-feriti").value || "").trim();
+  if (!cls) { alert("Seleziona la classe."); return; }
+  if (!docPres) { alert("Inserisci almeno un docente."); return; }
+  if (!evacPDR) { alert("Seleziona il punto di raccolta."); return; }
+  var stu = EVAC_DB[cls].students;
+  var evacuati = [], feriti = [], dispersi = [];
+  stu.forEach(function(s, i) {
+    var st = evacStati[i], n = s.cognome + " " + s.nome;
+    if (st === "F") { feriti.push(n); evacuati.push(n); }
+    else if (st === "D") { dispersi.push(n); }
+    else if (st !== "A") { evacuati.push(n); }
+  });
+  var nA = Object.values(evacStati).filter(function(x) { return x === "A"; }).length;
+  var now = new Date(), pad = function(x) { return String(x).padStart(2, "0"); };
+  var ora = pad(now.getDate()) + "/" + pad(now.getMonth()+1) + "/" + now.getFullYear() + " ore " + pad(now.getHours()) + ":" + pad(now.getMinutes());
+  var clsLabel = EVAC_DB[cls].label;
+  var lines = ["REPORT EVACUAZIONE - ITIS G. RIVA","Data: " + ora,"Classe: " + cls + " - " + clsLabel,"Punto raccolta: " + evacPDR,"","STUDENTI","Totale: " + stu.length,"Evacuati: " + evacuati.length,"Assenti: " + nA,"Feriti: " + feriti.length,"Dispersi: " + dispersi.length,""];
+  if (evacuati.length) { lines.push("Evacuati:"); evacuati.forEach(function(n){lines.push(" - "+n);}); lines.push(""); }
+  if (feriti.length)   { lines.push("Feriti:");   feriti.forEach(function(n)  {lines.push(" - "+n);}); lines.push(""); }
+  if (dispersi.length) { lines.push("Dispersi:"); dispersi.forEach(function(n){lines.push(" - "+n);}); lines.push(""); }
+  lines.push("DOCENTI","Presenti: " + docPres);
+  if (docDisp) lines.push("Dispersi: " + docDisp);
+  if (docFer)  lines.push("Feriti: " + docFer);
+  var txt = lines.join("\n");
+  var submitBtn = document.getElementById("evac-submit-btn");
+  submitBtn.disabled = true;
+  document.getElementById("evac-loader").classList.remove("hide");
+  apiCall("reportEvacuazione", { classe: cls, classeLabel: clsLabel, oraEvacuazione: ora, puntoRaccolta: evacPDR, studentiEvacuati: evacuati, studentiFeriti: feriti, studentiDispersi: dispersi, nAssenti: nA, docentiPresenti: docPres, docentiDispersi: docDisp, docentiFeriti: docFer, testoCompleto: txt })
+    .then(function(res) {
+      submitBtn.disabled = false; document.getElementById("evac-loader").classList.add("hide");
+      if (res && res.success) { alert("Report inviato a daniele.brancati@itisriva.edu.it"); evacReset(); }
+      else { alert("Errore: " + (res ? res.message : "Riprova.")); }
+    })
+    .catch(function(err) { submitBtn.disabled = false; document.getElementById("evac-loader").classList.add("hide"); alert("Errore di connessione: " + err.message); });
+}
+function evacReset() {
+  document.getElementById("evac-classe").value = "";
+  document.getElementById("evac-studenti-card").style.display = "none";
+  document.getElementById("evac-student-list").innerHTML = "";
+  document.getElementById("evac-doc-presenti").value = "";
+  document.getElementById("evac-doc-dispersi").value = "";
+  document.getElementById("evac-doc-feriti").value = "";
+  ["pdr-cb","pdr-ct","pdr-rg","pdr-ip"].forEach(function(id) { var el = document.getElementById(id); if (el) el.classList.remove("evac-pdr-on"); });
+  evacStati = {}; evacPDR = "";
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
   ['login-email','login-pwd'].forEach(function(id) {
     const el = document.getElementById(id);
@@ -1072,7 +1465,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(function() {});
   }
 });
-  // Registrazione del Service Worker (abilita PWA + offline)
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('./sw.js')
@@ -1080,56 +1473,6 @@ if ('serviceWorker' in navigator) {
       .catch(function(err) { console.log('SW non registrato:', err); });
   });
 }
-
-// ============================ PWA INSTALL ============================
-// Banner "Installa App" identico nel comportamento a Meteo Lamera.
-let deferredPrompt = null;
-
-function isAppInstalled() {
-  // Se l'app sta girando in modalità standalone, è già installata.
-  if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
-  if (window.navigator.standalone === true) return true; // iOS
-  return false;
-}
-
-window.addEventListener('beforeinstallprompt', function(e) {
-  // Chrome/Edge/Android: blocchiamo il banner nativo e mostriamo il nostro.
-  e.preventDefault();
-  deferredPrompt = e;
-  // Se l'utente ha già chiuso il banner di recente, non lo mostriamo.
-  const dismissedAt = parseInt(localStorage.getItem('rivapp_install_dismissed') || '0', 10);
-  const giorniDaUltimaChiusura = (Date.now() - dismissedAt) / (1000*60*60*24);
-  if (isAppInstalled() || giorniDaUltimaChiusura < 7) return;
-  document.getElementById('install-banner').style.display = 'flex';
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-  const btnInstall = document.getElementById('btn-install');
-  const btnDismiss = document.getElementById('btn-dismiss-install');
-  if (btnInstall) {
-    btnInstall.addEventListener('click', async function() {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      try { await deferredPrompt.userChoice; } catch(e) {}
-      deferredPrompt = null;
-      document.getElementById('install-banner').style.display = 'none';
-    });
-  }
-  if (btnDismiss) {
-    btnDismiss.addEventListener('click', function() {
-      document.getElementById('install-banner').style.display = 'none';
-      localStorage.setItem('rivapp_install_dismissed', String(Date.now()));
-    });
-  }
-});
-
-// Quando l'app viene effettivamente installata, nascondi il banner e ringrazia.
-window.addEventListener('appinstalled', function() {
-  document.getElementById('install-banner').style.display = 'none';
-  deferredPrompt = null;
-  if (typeof toast === 'function') toast('App installata! Ora puoi aprirla dalla schermata Home.', 'success');
-});
 </script>
-
 </body>
 </html>
