@@ -716,22 +716,24 @@ function caricaDashboard() {
       document.getElementById('tab-biblioteca').classList.remove('hide');
 
       if (res.isSegreteria) {
-        // Segreteria vede TUTTO
-        document.getElementById('tab-segr').classList.remove('hide');
+        // Segreteria: nasconde "I miei CdC" ed "Evacuazione", mostra tutto il resto
+        document.getElementById('tab-cdc').classList.add('hide');
+        document.getElementById('tab-evac').classList.add('hide');
         document.getElementById('tab-coord').classList.add('hide');
+        document.getElementById('tab-segr').classList.remove('hide');
         document.getElementById('tab-cal').classList.remove('hide');
         document.getElementById('tab-orario').classList.remove('hide');
         document.getElementById('tab-scrutini').classList.remove('hide');
-        document.getElementById('tab-evac').classList.remove('hide');
-        // CdC per segreteria: il tab "I miei CdC" resta sempre visibile (è il primo, senza .hide)
+        document.getElementById('tab-biblioteca').classList.remove('hide');
 
-        renderCdcList(res);           // renderizza CdC (lista vuota)
         renderSegreteria(res.segreteria);
         switchTab('segr');
         return;
       }
 
-      // Docente normale
+      // Docente normale: mostra "I miei CdC" ed "Evacuazione"
+      document.getElementById('tab-cdc').classList.remove('hide');
+      document.getElementById('tab-evac').classList.remove('hide');
       renderCdcList(res);
       if (res.isCoordinatore) { show('tab-coord'); renderCoordList(res); }
       else { hide('tab-coord'); }
