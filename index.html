@@ -310,7 +310,12 @@
 
   <!-- ── CDC COORDINATI ── -->
   <div id="pane-coord" class="hide">
-    <h4>CdC delle classi che coordini</h4>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+      <h4 class="mb-0">CdC delle classi che coordini</h4>
+      <button class="btn btn-outline-danger btn-sm" onclick="apriMotivazioniAssenze()">
+        📄 Motivazioni assenze
+      </button>
+    </div>
     <p class="small-muted">Clicca su un CdC per vedere i docenti e gestire le presenze.</p>
     <div id="coord-list" class="list-group"></div>
     <div id="coord-detail" class="card p-3 mt-3 hide">
@@ -324,7 +329,12 @@
 
   <!-- ── VISTA SEGRETERIA ── -->
   <div id="pane-segr" class="hide">
-    <h4>Riepilogo ore CdC - tutti i docenti</h4>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+      <h4 class="mb-0">Riepilogo ore CdC - tutti i docenti</h4>
+      <button class="btn btn-outline-danger btn-sm" onclick="apriMotivazioniAssenze()">
+        📄 Motivazioni assenze
+      </button>
+    </div>
     <div id="segr-ricap" class="mb-3 d-flex flex-wrap gap-2"></div>
     <input type="text" class="form-control mb-3" id="segr-filter" placeholder="Filtra per nome..." oninput="filtraSegr()">
     <div class="table-responsive">
@@ -510,18 +520,42 @@
   </div>
 </div>
 
-<div class="modal fade" id="modalSottoSoglia" tabindex="-1">
+<div class="modal fade" id="modalMotivazione" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header bg-warning"><h5 class="modal-title">⚠️ Attenzione</h5></div>
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Dichiarazione di assenza</h5>
+      </div>
       <div class="modal-body">
-        <p>ATTENZIONE, esonerandoti al c.d.c. selezionato, svolgerai un minimo di ore non congruo.</p>
-        <p class="mb-0">Ore previste: <b id="ss-ore">—</b> &nbsp; Soglia minima: <b id="ss-soglia">—</b></p>
-        <p class="mt-3 mb-0"><b>Vuoi continuare?</b></p>
+        <p class="mb-2"><b>Attenzione:</b> stai dichiarando la tua assenza al CdC di <span id="motivo-cdc-classe">—</span> del <span id="motivo-cdc-data">—</span>.</p>
+        <p class="small-muted mb-3">Una volta salvata, la motivazione sarà <b>definitiva</b> e non potrà essere modificata.</p>
+        <label class="form-label fw-bold">Motivazione <span class="text-danger">*</span></label>
+        <textarea id="motivo-testo" class="form-control" rows="4" maxlength="500" placeholder="Descrivi il motivo dell'assenza..."></textarea>
+        <div class="d-flex justify-content-between mt-1">
+          <small class="small-muted">Min 5 caratteri, max 500</small>
+          <small class="small-muted"><span id="motivo-count">0</span>/500</small>
+        </div>
+        <div id="motivo-err" class="alert alert-danger py-2 mt-2 hide"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="annullaForzaEsonero()">Annulla</button>
-        <button class="btn btn-warning" onclick="confermaForzaEsonero()">Continua</button>
+        <button class="btn btn-secondary" onclick="annullaMotivazione()">Annulla</button>
+        <button class="btn btn-danger" onclick="confermaMotivazione()">Conferma assenza</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalListaMotivazioni" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">📄 Motivazioni assenze</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="motivazioni-lista-body">
+        <div class="text-center py-3">
+          <div class="spinner-border text-primary spinner-border-sm"></div> Caricamento...
+        </div>
       </div>
     </div>
   </div>
@@ -559,7 +593,6 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx1n4GG2ifNYkvEBeHTPhKx
 
 let stateUser = null;
 let stateDashboard = null;
-let pendingForceEsonero = null;
 let sessionToken = localStorage.getItem('cdc_token') || null;
 let isSegreteria = false;
 
@@ -830,16 +863,22 @@ function renderCdcList(d) {
     const right = document.createElement('div');
     if (passato) {
       right.innerHTML = '<span class="badge bg-secondary">Concluso</span>';
+    } else if (stato === 'ASSENTE') {
+      // Assenza già dichiarata: mostro pulsante per rivedere la motivazione (readonly)
+      const btnVedi = document.createElement('button');
+      btnVedi.className = 'btn btn-sm btn-outline-secondary';
+      btnVedi.textContent = '👁 Vedi motivazione';
+      btnVedi.onclick = function() {
+        alert('La tua motivazione:\n\n"' + (c.motivazione || '(nessuna motivazione salvata)') + '"');
+      };
+      right.appendChild(btnVedi);
     } else {
-      const btnPart = document.createElement('button');
-      btnPart.className = 'btn btn-sm me-1 ' + (stato === 'PARTECIPA' ? 'btn-success' : 'btn-outline-success');
-      btnPart.textContent = 'Partecipo';
-      btnPart.onclick = function() { cambiaStato(c.id, 'PARTECIPA'); };
-      const btnEson = document.createElement('button');
-      btnEson.className = 'btn btn-sm ' + (stato === 'ESONERATO' ? 'btn-warning' : 'btn-outline-warning');
-      btnEson.textContent = 'Esonero';
-      btnEson.onclick = function() { cambiaStato(c.id, 'ESONERATO'); };
-      right.appendChild(btnPart); right.appendChild(btnEson);
+      // Stato PARTECIPA (default): può dichiararsi assente
+      const btnAss = document.createElement('button');
+      btnAss.className = 'btn btn-sm btn-outline-danger';
+      btnAss.textContent = '❌ Assente';
+      btnAss.onclick = function() { apriModalMotivazione(c); };
+      right.appendChild(btnAss);
     }
     const div = document.createElement('div');
     div.className = cls.join(' ');
@@ -850,8 +889,7 @@ function renderCdcList(d) {
 
 function statoLabel(s) {
   if (s === 'PARTECIPA') return 'Partecipo';
-  if (s === 'ESONERATO') return 'Esonerato';
-  if (s === 'ASSENTE')   return 'Assente (segnato dal coordinatore)';
+  if (s === 'ASSENTE')   return 'Assente';
   return s;
 }
 
@@ -862,33 +900,43 @@ function aggiornaContatoreOre(ore, soglia) {
   el.classList.add(ore < soglia ? 'counter-red' : 'counter-green');
 }
 
-function cambiaStato(idCdc, nuovoStato) {
+// ═══════════════════════════════════════════════════════════════
+// GESTIONE ASSENZA CON MOTIVAZIONE
+// ═══════════════════════════════════════════════════════════════
+let cdcAssenzaCorrente = null;
+
+function apriModalMotivazione(cdc) {
+  cdcAssenzaCorrente = cdc;
+  document.getElementById('motivo-cdc-classe').textContent = cdc.classe;
+  document.getElementById('motivo-cdc-data').textContent = cdc.dataIT + ' ' + cdc.oraInizio + '-' + cdc.oraFine;
+  document.getElementById('motivo-testo').value = '';
+  document.getElementById('motivo-count').textContent = '0';
+  hide('motivo-err');
+  new bootstrap.Modal(document.getElementById('modalMotivazione')).show();
+}
+
+function annullaMotivazione() {
+  cdcAssenzaCorrente = null;
+  bootstrap.Modal.getInstance(document.getElementById('modalMotivazione')).hide();
+}
+
+function confermaMotivazione() {
+  if (!cdcAssenzaCorrente) return;
+  const testo = (document.getElementById('motivo-testo').value || '').trim();
+  hide('motivo-err');
+  if (testo.length < 5) return showError('motivo-err', 'La motivazione deve avere almeno 5 caratteri.');
+  if (testo.length > 500) return showError('motivo-err', 'La motivazione non può superare 500 caratteri.');
+  const idCdc = cdcAssenzaCorrente.id;
   loaderDash(true);
-  apiCall('toggleEsonero', { idCdc: idCdc, nuovoStato: nuovoStato, forzaSottosoglia: false })
+  apiCall('toggleEsonero', { idCdc: idCdc, nuovoStato: 'ASSENTE', forzaSottosoglia: false, motivazione: testo })
     .then(function(res) {
       loaderDash(false);
-      if (res.success) { caricaDashboard(); return; }
-      if (res.requireConfirm) {
-        pendingForceEsonero = { idCdc: idCdc };
-        document.getElementById('ss-ore').textContent = res.oreFuture;
-        document.getElementById('ss-soglia').textContent = res.soglia;
-        new bootstrap.Modal(document.getElementById('modalSottoSoglia')).show();
-        return;
-      }
-      alert(res.message || 'Errore.');
+      if (!res.success) return showError('motivo-err', res.message || 'Errore.');
+      cdcAssenzaCorrente = null;
+      bootstrap.Modal.getInstance(document.getElementById('modalMotivazione')).hide();
+      caricaDashboard();
     })
-    .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
-}
-function annullaForzaEsonero() { pendingForceEsonero = null; }
-function confermaForzaEsonero() {
-  if (!pendingForceEsonero) return;
-  const idCdc = pendingForceEsonero.idCdc;
-  pendingForceEsonero = null;
-  bootstrap.Modal.getInstance(document.getElementById('modalSottoSoglia')).hide();
-  loaderDash(true);
-  apiCall('toggleEsonero', { idCdc: idCdc, nuovoStato: 'ESONERATO', forzaSottosoglia: true })
-    .then(function(res) { loaderDash(false); if (!res.success) return alert(res.message || 'Errore.'); caricaDashboard(); })
-    .catch(function(err) { loaderDash(false); alert('Errore server: ' + err.message); });
+    .catch(function(err) { loaderDash(false); showError('motivo-err', 'Errore server: ' + err.message); });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -930,14 +978,29 @@ function renderCoordDetail(res) {
   res.docenti.forEach(function(d) {
     const tr = document.createElement('tr');
     const tdNome = document.createElement('td'); tdNome.textContent = d.displayName;
-    const tdStato = document.createElement('td'); tdStato.innerHTML = '<span class="stato-' + d.stato + '">' + statoLabel(d.stato) + '</span>';
+    const tdStato = document.createElement('td');
+    let statoHtml = '<span class="stato-' + d.stato + '">' + statoLabel(d.stato) + '</span>';
+    if (d.stato === 'ASSENTE' && d.motivazione) {
+      statoHtml += '<br><small class="small-muted" style="white-space:pre-wrap;">📝 ' + escapeHtml(d.motivazione) + '</small>';
+    }
+    tdStato.innerHTML = statoHtml;
     const tdAzioni = document.createElement('td'); tdAzioni.className = 'text-end';
     if (!d.email || c.passato) { tdAzioni.innerHTML = '<span class="small-muted">—</span>'; }
+    else if (d.stato === 'ASSENTE') {
+      // Assenza già registrata: il coordinatore non può cambiarla
+      tdAzioni.innerHTML = '<span class="small-muted">Assenza dichiarata</span>';
+    }
     else {
       const btnAss = document.createElement('button');
-      btnAss.className = 'btn btn-sm ' + (d.stato === 'ASSENTE' ? 'btn-danger' : 'btn-outline-danger');
-      btnAss.textContent = (d.stato === 'ASSENTE' ? 'Togli assenza' : 'Segna assente');
-      btnAss.onclick = function() { coordCambiaStato(d.email, (d.stato === 'ASSENTE') ? 'PARTECIPA' : 'ASSENTE'); };
+      btnAss.className = 'btn btn-sm btn-outline-danger';
+      btnAss.textContent = 'Segna assente';
+      btnAss.onclick = function() {
+        const motivo = prompt('Motivazione per segnare ' + d.displayName + ' come assente:\n(min 5 caratteri)');
+        if (motivo === null) return;
+        const m = motivo.trim();
+        if (m.length < 5) { alert('Motivazione troppo corta (min 5 caratteri).'); return; }
+        coordCambiaStato(d.email, 'ASSENTE', m);
+      };
       tdAzioni.appendChild(btnAss);
     }
     tr.appendChild(tdNome); tr.appendChild(tdStato); tr.appendChild(tdAzioni);
@@ -946,10 +1009,10 @@ function renderCoordDetail(res) {
   tbl.appendChild(tbody); cont.appendChild(tbl);
   show('coord-detail');
 }
-function coordCambiaStato(emailDocente, nuovoStato) {
+function coordCambiaStato(emailDocente, nuovoStato, motivazione) {
   if (!currentCoordCdcId) return;
   loaderDash(true);
-  apiCall('coordSetStato', { idCdc: currentCoordCdcId, emailDocente: emailDocente, nuovoStato: nuovoStato })
+  apiCall('coordSetStato', { idCdc: currentCoordCdcId, emailDocente: emailDocente, nuovoStato: nuovoStato, motivazione: motivazione || '' })
     .then(function(res) { loaderDash(false); if (!res.success) return alert(res.message || 'Errore.'); apriCoordDetail(currentCoordCdcId); })
     .catch(function(err) { loaderDash(false); alert('Errore: ' + err.message); });
 }
@@ -1227,6 +1290,57 @@ function renderOrario(data) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// LISTA MOTIVAZIONI ASSENZE (coordinatore + segreteria)
+// ═══════════════════════════════════════════════════════════════
+function apriMotivazioniAssenze() {
+  const body = document.getElementById('motivazioni-lista-body');
+  body.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary spinner-border-sm"></div> Caricamento...</div>';
+  new bootstrap.Modal(document.getElementById('modalListaMotivazioni')).show();
+  apiCall('getMotivazioniAssenze', {})
+    .then(function(res) {
+      if (!res.success) {
+        body.innerHTML = '<div class="alert alert-danger">' + escapeHtml(res.message || res.error || 'Errore.') + '</div>';
+        return;
+      }
+      renderListaMotivazioni(res.motivazioni || []);
+    })
+    .catch(function(err) {
+      body.innerHTML = '<div class="alert alert-danger">Errore server: ' + escapeHtml(err.message) + '</div>';
+    });
+}
+
+function renderListaMotivazioni(lista) {
+  const body = document.getElementById('motivazioni-lista-body');
+  if (!lista || lista.length === 0) {
+    body.innerHTML = '<div class="alert alert-light text-center">Nessuna assenza con motivazione registrata.</div>';
+    return;
+  }
+  // Raggruppo per classe
+  const perClasse = {};
+  lista.forEach(function(m) {
+    if (!perClasse[m.classe]) perClasse[m.classe] = [];
+    perClasse[m.classe].push(m);
+  });
+  let html = '';
+  Object.keys(perClasse).sort().forEach(function(cls) {
+    html += '<h6 class="mt-3 mb-2 border-bottom pb-1">Classe ' + escapeHtml(cls) + '</h6>';
+    perClasse[cls].forEach(function(m) {
+      html += '<div class="card p-2 mb-2">' +
+        '<div class="d-flex justify-content-between align-items-start flex-wrap gap-1">' +
+          '<div><strong>' + escapeHtml(m.docente) + '</strong>' +
+          '<br><small class="small-muted">CdC del ' + escapeHtml(m.dataCdcIT) + ' · ' +
+          escapeHtml(m.oraInizio) + '-' + escapeHtml(m.oraFine) + '</small></div>' +
+          (m.quando ? '<small class="small-muted">Registrata: ' + escapeHtml(m.quando) + '</small>' : '') +
+        '</div>' +
+        '<div class="mt-2 p-2 bg-light rounded" style="white-space:pre-wrap;">' +
+          escapeHtml(m.motivazione) + '</div>' +
+        '</div>';
+    });
+  });
+  body.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════
 // SCRUTINI
 // ═══════════════════════════════════════════════════════════════
 function caricaScrutini() {
@@ -1485,6 +1599,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const el = document.getElementById(id);
     if (el) el.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
   });
+  // Contatore caratteri motivazione
+  const motTxt = document.getElementById('motivo-testo');
+  if (motTxt) {
+    motTxt.addEventListener('input', function() {
+      const c = document.getElementById('motivo-count');
+      if (c) c.textContent = String(motTxt.value.length);
+    });
+  }
   if (sessionToken) {
     const savedUser = localStorage.getItem('cdc_user');
     apiCall('checkSession', {})
