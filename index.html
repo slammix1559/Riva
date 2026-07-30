@@ -1309,25 +1309,58 @@ function apriMotivazioniAssenze() {
     });
 }
 
+let motivazioniDataGlobale = [];
+
 function renderListaMotivazioni(lista) {
+  motivazioniDataGlobale = lista || [];
   const body = document.getElementById('motivazioni-lista-body');
-  if (!lista || lista.length === 0) {
+  if (motivazioniDataGlobale.length === 0) {
     body.innerHTML = '<div class="alert alert-light text-center">Nessuna assenza con motivazione registrata.</div>';
     return;
   }
-  // Raggruppo per classe
-  const perClasse = {};
+  body.innerHTML =
+    '<input type="text" id="motivazioni-search" class="form-control mb-3" ' +
+    'placeholder="🔍 Filtra per docente o classe..." oninput="filtraMotivazioni()">' +
+    '<div id="motivazioni-content"></div>';
+  document.getElementById('motivazioni-search').focus();
+  _renderMotivazioniFiltered(motivazioniDataGlobale);
+}
+
+function filtraMotivazioni() {
+  const q = (document.getElementById('motivazioni-search').value || '').toLowerCase().trim();
+  const filtrate = !q ? motivazioniDataGlobale : motivazioniDataGlobale.filter(function(m) {
+    return (m.docente || '').toLowerCase().indexOf(q) >= 0 ||
+           (m.classe || '').toLowerCase().indexOf(q) >= 0;
+  });
+  _renderMotivazioniFiltered(filtrate);
+}
+
+function _renderMotivazioniFiltered(lista) {
+  const cont = document.getElementById('motivazioni-content');
+  if (!lista || lista.length === 0) {
+    cont.innerHTML = '<div class="alert alert-light text-center">Nessun risultato.</div>';
+    return;
+  }
+  // Raggruppo per docente: ogni docente mostra TUTTE le sue assenze motivate,
+  // su qualsiasi classe e data.
+  const perDocente = {};
   lista.forEach(function(m) {
-    if (!perClasse[m.classe]) perClasse[m.classe] = [];
-    perClasse[m.classe].push(m);
+    if (!perDocente[m.docente]) perDocente[m.docente] = [];
+    perDocente[m.docente].push(m);
   });
   let html = '';
-  Object.keys(perClasse).sort().forEach(function(cls) {
-    html += '<h6 class="mt-3 mb-2 border-bottom pb-1">Classe ' + escapeHtml(cls) + '</h6>';
-    perClasse[cls].forEach(function(m) {
-      html += '<div class="card p-2 mb-2">' +
+  Object.keys(perDocente).sort().forEach(function(doc) {
+    const assenze = perDocente[doc];
+    html += '<div class="card mb-3">' +
+      '<div class="card-header bg-light d-flex justify-content-between align-items-center flex-wrap gap-1">' +
+        '<strong>' + escapeHtml(doc) + '</strong>' +
+        '<span class="badge bg-danger">' + assenze.length + ' assenza/e</span>' +
+      '</div>' +
+      '<div class="card-body py-2">';
+    assenze.forEach(function(m, idx) {
+      html += '<div class="' + (idx > 0 ? 'border-top pt-2 mt-2' : '') + '">' +
         '<div class="d-flex justify-content-between align-items-start flex-wrap gap-1">' +
-          '<div><strong>' + escapeHtml(m.docente) + '</strong>' +
+          '<div><strong>Classe ' + escapeHtml(m.classe) + '</strong>' +
           '<br><small class="small-muted">CdC del ' + escapeHtml(m.dataCdcIT) + ' · ' +
           escapeHtml(m.oraInizio) + '-' + escapeHtml(m.oraFine) + '</small></div>' +
           (m.quando ? '<small class="small-muted">Registrata: ' + escapeHtml(m.quando) + '</small>' : '') +
@@ -1336,8 +1369,9 @@ function renderListaMotivazioni(lista) {
           escapeHtml(m.motivazione) + '</div>' +
         '</div>';
     });
+    html += '</div></div>';
   });
-  body.innerHTML = html;
+  cont.innerHTML = html;
 }
 
 // ═══════════════════════════════════════════════════════════════
