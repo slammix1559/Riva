@@ -585,11 +585,29 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════════════
 const API_URL = "https://script.google.com/macros/s/AKfycbx1n4GG2ifNYkvEBeHTPhKxxxgJckfA9NhEx5VPJEroJn68KF3Ex_w9StYIkif9Y63mZw/exec";
+
+// ── Notifiche push (Firebase Cloud Messaging) ──────────────────────────
+// Valori da recuperare dalla Firebase Console (Impostazioni progetto):
+// - FIREBASE_CONFIG: sezione "Generale" > "Le tue app" > app Web
+// - FCM_VAPID_KEY: sezione "Cloud Messaging" > "Certificati push web" > chiave coppia
+// Finché restano ai placeholder, le notifiche push sono semplicemente disattivate
+// (l'app funziona normalmente, l'email continua a partire comunque).
+const FIREBASE_CONFIG = {
+  apiKey: "INSERISCI_API_KEY",
+  authDomain: "INSERISCI_PROJECT.firebaseapp.com",
+  projectId: "INSERISCI_PROJECT_ID",
+  storageBucket: "INSERISCI_PROJECT.appspot.com",
+  messagingSenderId: "INSERISCI_SENDER_ID",
+  appId: "INSERISCI_APP_ID"
+};
+const FCM_VAPID_KEY = "INSERISCI_VAPID_KEY";
 
 let stateUser = null;
 let stateDashboard = null;
@@ -764,6 +782,50 @@ function mostraDashboard() {
   hide('view-login'); show('view-dashboard'); show('navbar');
   document.getElementById('user-info').textContent = stateUser.displayName + ' (' + stateUser.email + ')';
   caricaDashboard();
+  initPushNotifications();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NOTIFICHE PUSH (Firebase Cloud Messaging)
+// ═══════════════════════════════════════════════════════════════
+let _fcmInitDone = false;
+
+function _miniToast(msg) {
+  let cont = document.getElementById('mini-toast-container');
+  if (!cont) {
+    cont = document.createElement('div');
+    cont.id = 'mini-toast-container';
+    cont.style.cssText = 'position:fixed;top:16px;right:16px;z-index:2000;max-width:320px;';
+    document.body.appendChild(cont);
+  }
+  const el = document.createElement('div');
+  el.style.cssText = 'background:#0d6efd;color:#fff;padding:10px 14px;border-radius:8px;' +
+    'margin-top:8px;font-size:.9rem;box-shadow:0 4px 12px rgba(0,0,0,.15);';
+  el.textContent = msg;
+  cont.appendChild(el);
+  setTimeout(function() { el.remove(); }, 6000);
+}
+
+function initPushNotifications() {
+  if (_fcmInitDone) return;
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+  if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.indexOf('INSERISCI') === 0) return; // non configurato
+  try {
+    if (typeof firebase === 'undefined') return;
+    if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    const messaging = firebase.messaging();
+    Notification.requestPermission().then(function(perm) {
+      if (perm !== 'granted') return;
+      messaging.getToken({ vapidKey: FCM_VAPID_KEY }).then(function(tok) {
+        if (tok) apiCall('registraFcmToken', { token: tok }).catch(function() {});
+      }).catch(function(err) { console.log('FCM getToken errore:', err); });
+    });
+    messaging.onMessage(function(payload) {
+      const n = payload.notification || {};
+      _miniToast((n.title || 'Notifica') + (n.body ? ': ' + n.body : ''));
+    });
+    _fcmInitDone = true;
+  } catch(e) { console.log('Init push non riuscito:', e); }
 }
 
 function caricaDashboard() {
