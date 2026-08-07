@@ -814,12 +814,26 @@ function initPushNotifications() {
     if (typeof firebase === 'undefined') return;
     if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     const messaging = firebase.messaging();
-    Notification.requestPermission().then(function(perm) {
-      if (perm !== 'granted') return;
-      messaging.getToken({ vapidKey: FCM_VAPID_KEY }).then(function(tok) {
-        if (tok) apiCall('registraFcmToken', { token: tok }).catch(function() {});
-      }).catch(function(err) { console.log('FCM getToken errore:', err); });
-    });
+
+    // Firebase per default cerca un service worker chiamato
+    // "firebase-messaging-sw.js" nella root del sito. Il nostro si chiama
+    // "sw.js" (condiviso con la cache offline): gli dico esplicitamente di
+    // usare QUELLO già registrato, altrimenti getToken() fallisce in
+    // silenzio e nessun token viene mai salvato.
+    navigator.serviceWorker.ready.then(function(registration) {
+      Notification.requestPermission().then(function(perm) {
+        if (perm !== 'granted') { console.log('Permesso notifiche negato dall\'utente.'); return; }
+        messaging.getToken({ vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: registration })
+          .then(function(tok) {
+            if (!tok) { console.log('getToken non ha restituito alcun token.'); return; }
+            apiCall('registraFcmToken', { token: tok })
+              .then(function() { console.log('Token FCM registrato correttamente.'); })
+              .catch(function(err) { console.log('Errore registrazione token lato server:', err); });
+          })
+          .catch(function(err) { console.log('FCM getToken errore:', err); });
+      });
+    }).catch(function(err) { console.log('Service worker non pronto:', err); });
+
     messaging.onMessage(function(payload) {
       const n = payload.notification || {};
       _miniToast((n.title || 'Notifica') + (n.body ? ': ' + n.body : ''));
