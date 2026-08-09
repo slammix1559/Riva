@@ -89,6 +89,17 @@ self.addEventListener('fetch', function(event) {
     return; // lascia gestire al browser normalmente
   }
 
+  // Metto in cache SOLO le richieste GET dello stesso sito. La Cache API
+  // non supporta richieste POST (es. le chiamate di Firebase per
+  // registrare il dispositivo alle notifiche push), e le richieste verso
+  // altri domini (Firebase, CDN, ecc.) non ci servono offline: le lascio
+  // gestire normalmente dal browser senza intercettarle.
+  const isGet = event.request.method === 'GET';
+  const isSameOrigin = url.indexOf(self.location.origin) === 0;
+  if (!isGet || !isSameOrigin) {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then(function(res) {
